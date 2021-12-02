@@ -48,4 +48,12 @@ public class ValidateResult {
     public String getDescription() {
         return description;
     }
+
+    @Override
+    public String toString() {
+        return "ValidateResult{" +
+                "status=" + status +
+                ", description='" + description + '\'' +
+                '}';
+    }
 }

@@ -60,4 +60,13 @@ public class PublishResult {
     public String getToken() {
         return token;
     }
+
+    @Override
+    public String toString() {
+        return "PublishResult{" +
+                "status=" + status +
+                ", description='" + description + '\'' +
+                ", token='" + token + '\'' +
+                '}';
+    }
 }
