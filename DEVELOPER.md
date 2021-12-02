@@ -17,7 +17,7 @@ This section is targeted to developers that want to use the Jenkins Plugin provi
 
 #### Debug Mode
 
-More extensive logging
+More extensive logging. Please not that the output is generatesing System.out.println and will 
 
 #### Dryrun Mode
 
