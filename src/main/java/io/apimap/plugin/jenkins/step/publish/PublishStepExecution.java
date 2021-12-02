@@ -42,6 +42,7 @@ import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.workflow.steps.StepContext;
 import org.jenkinsci.plugins.workflow.steps.SynchronousStepExecution;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicReference;
@@ -105,17 +106,28 @@ public class PublishStepExecution extends SynchronousStepExecution<PublishResult
         FilePath path = getContext().get(FilePath.class);
         if(path == null) { return failure(FILEPATH_IS_A_NULL_OBJECT); }
 
-        LOGGER.log(Level.INFO, "Reading metadata file");
-        MetadataFile metadataFile = FileReader.metadataFile(FileReader.filePath(path, this.step.getMetadataFile()));
-        if (metadataFile == null) { return failure(METADATA_FILE_MISSING_ERROR); }
+        MetadataFile metadataFile;
+        RestClientConfiguration configuration;
 
-        LOGGER.log(Level.INFO, "Creating rest client configuration");
-        RestClientConfiguration configuration = RestClientUtil.configuration(this.step.getToken());
+        LOGGER.log(Level.INFO, "Reading metadata file");
 
         try {
+            metadataFile = FileReader.metadataFile(FileReader.filePath(path, this.step.getMetadataFile()));
+            if (metadataFile == null) {
+                return failure(METADATA_FILE_MISSING_ERROR);
+            }
+
+            LOGGER.log(Level.INFO, "Creating rest client configuration");
+            configuration = RestClientUtil.configuration(this.step.getToken());
+
             LOGGER.log(Level.INFO, "Uploading metadata content");
             MetadataDataRestEntity metadataReturnObject = uploadMetadata(metadataFile, configuration);
-            if (metadataReturnObject == null) { return failure(UNABLE_TO_UPLOAD_METADATA_ERROR_MESSAGE); }
+            if (metadataReturnObject == null) {
+                return failure(UNABLE_TO_UPLOAD_METADATA_ERROR_MESSAGE);
+            }
+        } catch (FileNotFoundException e){
+            LOGGER.log(Level.INFO, e.getMessage());
+            return failure(METADATA_FILE_MISSING_ERROR);
         } catch (IOException e) {
             LOGGER.log(Level.INFO, e.getMessage());
             return failure(UNABLE_TO_UPLOAD_METADATA_ERROR_MESSAGE);
@@ -128,10 +140,11 @@ public class PublishStepExecution extends SynchronousStepExecution<PublishResult
         }
 
         LOGGER.log(Level.INFO, "Reading taxonomy file");
-        TaxonomyFile taxonomyFile = FileReader.taxonomyFile(FileReader.filePath(path, this.step.getTaxonomyFile()));
-        if (taxonomyFile == null) { return failure(TAXONOMY_FILE_MISSING_ERROR); }
 
         try {
+            TaxonomyFile taxonomyFile = FileReader.taxonomyFile(FileReader.filePath(path, this.step.getTaxonomyFile()));
+            if (taxonomyFile == null) { return failure(TAXONOMY_FILE_MISSING_ERROR); }
+
             LOGGER.log(Level.INFO, "Uploading taxonomy content");
             ClassificationRootRestEntity classificationReturnObject = uploadTaxonomy(
                     metadataFile.getData().getName(),
@@ -140,6 +153,9 @@ public class PublishStepExecution extends SynchronousStepExecution<PublishResult
                     configuration
             );
             if (classificationReturnObject == null) { return failure(UNABLE_TO_UPLOAD_TAXONOMY_ERROR_MESSAGE); }
+        } catch (FileNotFoundException e){
+            LOGGER.log(Level.INFO, e.getMessage());
+            return failure(TAXONOMY_FILE_MISSING_ERROR);
         } catch (IncorrectTokenException e) {
             LOGGER.log(Level.INFO, e.getMessage());
             return failure(MISSING_OR_INVALID_API_TOKEN_ERROR_MESSAGE);
