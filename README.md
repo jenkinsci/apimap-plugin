@@ -56,7 +56,7 @@ pipeline {
         stage('Validate'){
             steps{
                 script{
-                    def result = validateAPI metadataFile: 'apicatalog/metadata.apicatalog', taxonomyFile: 'apicatalog/taxonomy.apicatalog'
+                    def result = validateAPI metadataFile: 'apimap/metadata.apimap', taxonomyFile: 'apimap/taxonomy.apimap'
                     echo result.getDescription()
                 }
             }
@@ -64,7 +64,7 @@ pipeline {
         stage('Publish'){
             steps{
                 script{
-                    def result = publishAPI metadataFile: 'apicatalog/metadata.apicatalog', taxonomyFile: 'apicatalog/taxonomy.apicatalog'
+                    def result = publishAPI metadataFile: 'apimap/metadata.apimap', taxonomyFile: 'apimap/taxonomy.apimap'
                     echo result.getDescription()
                 }
             }

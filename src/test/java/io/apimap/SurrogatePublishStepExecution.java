@@ -29,6 +29,7 @@ import io.apimap.plugin.jenkins.exceptions.PublishErrorException;
 import io.apimap.plugin.jenkins.output.PublishResult;
 import io.apimap.plugin.jenkins.step.PublishStep;
 import io.apimap.plugin.jenkins.step.publish.PublishStepExecution;
+import org.apache.commons.lang.mutable.MutableBoolean;
 import org.jenkinsci.plugins.workflow.steps.StepContext;
 
 import java.io.IOException;
@@ -42,16 +43,16 @@ public class SurrogatePublishStepExecution extends PublishStepExecution {
         return super.failure(description);
     }
 
-    public PublishResult success(String description, String token){
-        return super.success(description, token);
+    public PublishResult success(String description, String token, MutableBoolean isApiCreated){
+        return super.success(description, token, isApiCreated);
     }
 
     public PublishResult run() throws Exception {
         return super.run();
     }
 
-    public MetadataDataRestEntity uploadMetadata(MetadataFile metadataFile, RestClientConfiguration configuration) throws IOException, InterruptedException, IncorrectTokenException, PublishErrorException {
-        return super.uploadMetadata(metadataFile, configuration);
+    public MetadataDataRestEntity uploadMetadata(MetadataFile metadataFile, RestClientConfiguration configuration, MutableBoolean isApiCreated) throws IOException, InterruptedException, IncorrectTokenException, PublishErrorException {
+        return super.uploadMetadata(metadataFile, configuration, isApiCreated);
     }
 
     public ClassificationRootRestEntity uploadTaxonomy(String apiName, String apiVersion, TaxonomyFile taxonomyFile, RestClientConfiguration configuration) throws IOException, IncorrectTokenException, PublishErrorException {

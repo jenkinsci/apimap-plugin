@@ -11,12 +11,12 @@
     </parent>
 
     <groupId>io.jenkins.plugins</groupId>
-    <artifactId>apimap-publisher-plugin</artifactId>
+    <artifactId>apimap</artifactId>
     <name>Apimap.io</name>
-    <version>1.0.0</version>
+    <version>${revision}${changelist}</version>
     <packaging>hpi</packaging>
     <description>Enables automated publishing of API metadata to your Apimap.io instance</description>
-    <url>https://github.com/jenkinsci/apimap-publisher-plugin</url>
+    <url>https://github.com/jenkinsci/apimap-publisher</url>
 
     <licenses>
         <license>
@@ -30,6 +30,7 @@
         <developer>
             <id>msulland</id>
             <name>Magnus Sulland</name>
+            <email>magnus@apperiet.no</email>
             <roles>
                 <role>maintainer</role>
             </roles>

@@ -39,6 +39,8 @@ import io.apimap.plugin.jenkins.step.PublishStep;
 import io.apimap.plugin.jenkins.utils.FileReader;
 import io.apimap.plugin.jenkins.utils.RestClientUtil;
 import jenkins.model.Jenkins;
+import org.apache.commons.lang.mutable.Mutable;
+import org.apache.commons.lang.mutable.MutableBoolean;
 import org.jenkinsci.plugins.workflow.steps.StepContext;
 import org.jenkinsci.plugins.workflow.steps.SynchronousStepExecution;
 
@@ -82,15 +84,15 @@ public class PublishStepExecution extends SynchronousStepExecution<PublishResult
         return new PublishResult(PublishResult.Status.FAILED, description);
     }
 
-    protected PublishResult success(String description, String token){
+    protected PublishResult success(String description, String token, MutableBoolean isApiCreate){
         ApiMap.ApiMapDescriptorImpl descImpl = (ApiMap.ApiMapDescriptorImpl) Jenkins.getInstance().getDescriptorByName(ApiMap.class.getName());
 
         PublishResult returnValue;
 
-        if(token == null) {
-            returnValue = new PublishResult(PublishResult.Status.UPDATED, description);
-        }else{
+        if(isApiCreate.isTrue()) {
             returnValue = new PublishResult(PublishResult.Status.CREATED, description, token);
+        }else{
+            returnValue = new PublishResult(PublishResult.Status.UPDATED, description);
         }
 
         if(descImpl.updateBuildStatus()) {
@@ -111,6 +113,8 @@ public class PublishStepExecution extends SynchronousStepExecution<PublishResult
 
         LOGGER.log(Level.INFO, "Reading metadata file");
 
+        MutableBoolean isApiCreated = new MutableBoolean(false);
+
         try {
             metadataFile = FileReader.metadataFile(FileReader.filePath(path, this.step.getMetadataFile()));
             if (metadataFile == null) {
@@ -121,7 +125,7 @@ public class PublishStepExecution extends SynchronousStepExecution<PublishResult
             configuration = RestClientUtil.configuration(this.step.getToken());
 
             LOGGER.log(Level.INFO, "Uploading metadata content");
-            MetadataDataRestEntity metadataReturnObject = uploadMetadata(metadataFile, configuration);
+            MetadataDataRestEntity metadataReturnObject = uploadMetadata(metadataFile, configuration, isApiCreated);
             if (metadataReturnObject == null) {
                 return failure(UNABLE_TO_UPLOAD_METADATA_ERROR_MESSAGE);
             }
@@ -164,14 +168,10 @@ public class PublishStepExecution extends SynchronousStepExecution<PublishResult
             return failure(UNABLE_TO_UPLOAD_TAXONOMY_ERROR_MESSAGE);
         }
 
-        if(this.step.getToken() == null) {
-            return success(STEP_COMPLETED_SUCCESSFULLY, configuration.getToken());
-        }
-
-        return success(STEP_COMPLETED_SUCCESSFULLY, null);
+        return success(STEP_COMPLETED_SUCCESSFULLY, configuration.getToken(), isApiCreated);
     }
 
-    protected MetadataDataRestEntity uploadMetadata(MetadataFile metadataFile, RestClientConfiguration configuration) throws IOException, InterruptedException, IncorrectTokenException, PublishErrorException {
+    protected MetadataDataRestEntity uploadMetadata(MetadataFile metadataFile, RestClientConfiguration configuration, MutableBoolean isApiCreated) throws IOException, InterruptedException, IncorrectTokenException, PublishErrorException {
         /* Assemble REST entities */
         LOGGER.log(Level.INFO, "Assembling REST entities");
 
@@ -204,6 +204,7 @@ public class PublishStepExecution extends SynchronousStepExecution<PublishResult
         Consumer<Object> apiCreatedCallback = content -> {
             LOGGER.log(Level.INFO, "Setting token " + ((ApiDataRestEntity) content).getMeta().getToken());
             configuration.setToken(((ApiDataRestEntity) content).getMeta().getToken());
+            isApiCreated.setValue(true);
         };
 
         Consumer<Object> apiVersionCreatedCallback = content -> {
