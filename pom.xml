@@ -101,7 +101,7 @@
         <dependency>
             <groupId>io.apimap.client</groupId>
             <artifactId>rest-client</artifactId>
-            <version>2.0.4</version>
+            <version>2.0.5</version>
         </dependency>
         <dependency>
             <groupId>io.apimap.file</groupId>
@@ -127,24 +127,18 @@
             <name>GitHub REST Client</name>
             <url>https://maven.pkg.github.com/apimap/java-rest-client/</url>
             <layout>default</layout>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
         </repository>
         <repository>
             <id>github-file-interface</id>
             <name>GitHub File Interface</name>
             <url>https://maven.pkg.github.com/apimap/java-file-interface/</url>
             <layout>default</layout>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
+        </repository>
+        <repository>
+            <id>github-rest-interface</id>
+            <name>GitHub REST Interface</name>
+            <url>https://maven.pkg.github.com/apimap/java-rest-interface/</url>
+            <layout>default</layout>
         </repository>
         <repository>
             <id>repo.jenkins-ci.org</id>

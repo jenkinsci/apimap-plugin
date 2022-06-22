@@ -31,4 +31,4 @@ jobs:
               "password": "${{ secrets.MULTI_PACKAGES_TOKEN }}"
             }]
       - name: Build
-        run: mvn package -Dmaven.test.skip -f pom.xml
+        run: mvn package -Dmaven.test.skip -Drevision=0.0.1 -Dchangelist= -f pom.xml

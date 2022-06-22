@@ -20,6 +20,7 @@ under the License.
 package io.apimap.plugin.jenkins;
 
 import hudson.Extension;
+import hudson.Util;
 import hudson.model.AbstractProject;
 import hudson.model.Job;
 import hudson.model.JobProperty;
@@ -29,6 +30,7 @@ import io.apimap.api.rest.ApiCollectionRootRestEntity;
 import io.apimap.api.rest.jsonapi.JsonApiRestResponseWrapper;
 import io.apimap.client.IRestClient;
 import io.apimap.client.RestClientConfiguration;
+import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
@@ -106,7 +108,13 @@ public class ApiMap extends JobProperty<AbstractProject<?, ?>> {
         }
 
         public FormValidation doTestConnection(@QueryParameter("url") final String endpoint){
-             try {
+            Jenkins.get().checkPermission(Jenkins.ADMINISTER);
+
+            if (Util.fixEmptyAndTrim(endpoint) == null) {
+                return FormValidation.error("Endpoint URL cannot be empty");
+            }
+
+            try {
                 RestClientConfiguration clientConfiguration = new RestClientConfiguration(
                         null,
                         endpoint
