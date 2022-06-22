@@ -24,6 +24,7 @@ import io.apimap.plugin.jenkins.ApiMap;
 import jenkins.model.Jenkins;
 
 import java.io.IOException;
+import java.util.regex.Pattern;
 
 public class RestClientUtil {
     public static RestClientConfiguration configuration(String token) throws IOException {
@@ -44,5 +45,9 @@ public class RestClientUtil {
                 descImpl.getUrl(),
                 descImpl.isDebugMode()
         );
+    }
+
+    public static boolean bareboneURL(String url){
+        return !url.matches(".*([&?]).*");
     }
 }

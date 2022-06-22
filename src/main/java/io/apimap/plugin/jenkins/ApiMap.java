@@ -30,6 +30,7 @@ import io.apimap.api.rest.ApiCollectionRootRestEntity;
 import io.apimap.api.rest.jsonapi.JsonApiRestResponseWrapper;
 import io.apimap.client.IRestClient;
 import io.apimap.client.RestClientConfiguration;
+import io.apimap.plugin.jenkins.utils.RestClientUtil;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.QueryParameter;
@@ -112,6 +113,10 @@ public class ApiMap extends JobProperty<AbstractProject<?, ?>> {
 
             if (Util.fixEmptyAndTrim(endpoint) == null) {
                 return FormValidation.error("Endpoint URL cannot be empty");
+            }
+
+            if(!RestClientUtil.bareboneURL(endpoint)){
+                return FormValidation.error("The endpoint url can not contain any arguments and must be to the root level of the Apimap instance");
             }
 
             try {
