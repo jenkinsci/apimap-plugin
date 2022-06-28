@@ -108,6 +108,7 @@ public class ApiMap extends JobProperty<AbstractProject<?, ?>> {
             this.debugMode = debugMode;
         }
 
+        @POST
         public FormValidation doTestConnection(@QueryParameter("url") final String endpoint){
             Jenkins.get().checkPermission(Jenkins.ADMINISTER);
 
