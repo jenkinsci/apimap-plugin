@@ -107,35 +107,5 @@ public class ApiMap extends JobProperty<AbstractProject<?, ?>> {
         public void setDebugMode(boolean debugMode) {
             this.debugMode = debugMode;
         }
-
-        @POST
-        public FormValidation doTestConnection(@QueryParameter("url") final String endpoint){
-            Jenkins.get().checkPermission(Jenkins.ADMINISTER);
-
-            if (Util.fixEmptyAndTrim(endpoint) == null) {
-                return FormValidation.error("Endpoint URL cannot be empty");
-            }
-
-            if(!RestClientUtil.bareboneURL(endpoint)){
-                return FormValidation.error("The endpoint url can not contain any arguments and must be to the root level of the Apimap instance");
-            }
-
-            try {
-                RestClientConfiguration clientConfiguration = new RestClientConfiguration(
-                        null,
-                        endpoint
-                );
-
-                ApiCollectionRootRestEntity content = IRestClient.withConfiguration(clientConfiguration)
-                        .followCollection(JsonApiRestResponseWrapper.API_COLLECTION)
-                        .getResource(ApiCollectionRootRestEntity.class);
-
-                if (content != null) return FormValidation.ok("Success");
-            } catch (Throwable e) {
-                return FormValidation.error("Connection error : " + e.getMessage());
-            }
-
-            return FormValidation.ok("Unknown connection failure");
-        }
     }
 }

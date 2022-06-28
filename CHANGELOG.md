@@ -2,7 +2,7 @@ Changelog
 ===
 
 ### 28.06.2022
-- Added POST to test method due to CSRF protection
+- Removed connection testing function
 
 ### 22.06.2022
 - Testing a URL now requires the user to be Administrator

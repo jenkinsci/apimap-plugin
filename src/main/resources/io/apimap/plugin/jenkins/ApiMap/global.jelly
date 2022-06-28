@@ -3,7 +3,6 @@
   <f:section title="ApiMap.io">
     <f:entry title="ApiMap.io instance URL" field="url">
         <f:textbox />
-        <f:validateButton title="${%Test Connection}" progress="${%Testing...}" method="testConnection" with="url" />
     </f:entry>
     <f:entry title="Update Global Build Status" field="updateBuildStatus">
       <f:checkbox />
