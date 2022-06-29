@@ -1,6 +1,10 @@
 Changelog
 ===
 
+### 29.06.2022
+- Code added to the jenkins git repo
+- Added jar libraries to local repository
+
 ### 28.06.2022
 - Removed connection testing function
 

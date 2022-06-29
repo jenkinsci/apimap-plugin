@@ -3,7 +3,7 @@ Apimap.io Jenkins Plugin
 
 🎉 **Welcome** 🎉
 
-This is the home of the Apimap.io project, a freestanding solution to keep track of all functionality a company
+This is a part of the Apimap.io project https://github.com/apimap, a freestanding solution to keep track of all functionality a company
 provides through an API. It is a push based system, connected with your build pipeline or manually updated using our CLI.
 
 > **Application programming interface (API)**: Point of functional integration between two or more systems connected

@@ -49,7 +49,7 @@ ___
 
 #### Howto Submit A Report
 
-[We use GitHub to track our bugs and features.](https://github.com/apimap/java-rest-client)
+[We use GitHub to track our bugs and features.](https://github.com/jenkinsci/apimap-plugin)
 
 ##### A Good Bug Report Should Contain
 
