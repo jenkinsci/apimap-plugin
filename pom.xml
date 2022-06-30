@@ -38,7 +38,7 @@
     <url>https://github.com/jenkinsci/apimap-plugin</url>
 
     <properties>
-        <revision>1.23</revision>
+        <revision>1</revision>
         <changelist>-SNAPSHOT</changelist>
         <jenkins.version>2.300</jenkins.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
