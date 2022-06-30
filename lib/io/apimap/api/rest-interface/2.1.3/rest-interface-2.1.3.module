@@ -1,0 +1,83 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "io.apimap.api",
+    "module": "rest-interface",
+    "version": "2.1.3",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api"
+      },
+      "files": [
+        {
+          "name": "rest-interface-2.1.3.jar",
+          "url": "rest-interface-2.1.3.jar",
+          "size": 67457,
+          "sha512": "86fb9cce19181a846fc9277c329b36c01f04777ad73d12afbc1169c4db2cfa1107e45574e785de93d3c565b95c0360787ac417e13975912ae4e7b44446e2ead3",
+          "sha256": "d8d0467d03316f70bcb88c958c905ca224e5e62b15b901fbaf20e28462db7ec5",
+          "sha1": "615cb868e0c6e440cc626e154635c2b91271dd91",
+          "md5": "8e67d6c5e2ea87820c3d02fe42185f49"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "com.fasterxml.jackson.core",
+          "module": "jackson-databind",
+          "version": {
+            "requires": "2.13.1"
+          }
+        },
+        {
+          "group": "com.fasterxml.jackson.core",
+          "module": "jackson-annotations",
+          "version": {
+            "requires": "2.13.1"
+          }
+        },
+        {
+          "group": "io.swagger.core.v3",
+          "module": "swagger-annotations",
+          "version": {
+            "requires": "2.1.11"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "rest-interface-2.1.3.jar",
+          "url": "rest-interface-2.1.3.jar",
+          "size": 67457,
+          "sha512": "86fb9cce19181a846fc9277c329b36c01f04777ad73d12afbc1169c4db2cfa1107e45574e785de93d3c565b95c0360787ac417e13975912ae4e7b44446e2ead3",
+          "sha256": "d8d0467d03316f70bcb88c958c905ca224e5e62b15b901fbaf20e28462db7ec5",
+          "sha1": "615cb868e0c6e440cc626e154635c2b91271dd91",
+          "md5": "8e67d6c5e2ea87820c3d02fe42185f49"
+        }
+      ]
+    }
+  ]
+}

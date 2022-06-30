@@ -1,0 +1,76 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "io.apimap.file",
+    "module": "file-interface",
+    "version": "1.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api"
+      },
+      "files": [
+        {
+          "name": "file-interface-1.0.jar",
+          "url": "file-interface-1.0.jar",
+          "size": 9054,
+          "sha512": "c11981c37897542360a212474b28f581841be0ef37fae4fc8431f83957b56d75141fa752a457792f782c09306a295f3360145f6f2608a55343726bfbb776e525",
+          "sha256": "12cb352883bf31a0327f99c71c33f8fcc2b5fc92fec9d2e6aba65bf6cb954198",
+          "sha1": "904b90c2e92d7b90bcf945ecff533e617475fe44",
+          "md5": "b1a83a8582fef1dbd09fcdb36ffb3507"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "com.fasterxml.jackson.core",
+          "module": "jackson-databind",
+          "version": {
+            "requires": "2.13.0"
+          }
+        },
+        {
+          "group": "com.fasterxml.jackson.core",
+          "module": "jackson-core",
+          "version": {
+            "requires": "2.13.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "file-interface-1.0.jar",
+          "url": "file-interface-1.0.jar",
+          "size": 9054,
+          "sha512": "c11981c37897542360a212474b28f581841be0ef37fae4fc8431f83957b56d75141fa752a457792f782c09306a295f3360145f6f2608a55343726bfbb776e525",
+          "sha256": "12cb352883bf31a0327f99c71c33f8fcc2b5fc92fec9d2e6aba65bf6cb954198",
+          "sha1": "904b90c2e92d7b90bcf945ecff533e617475fe44",
+          "md5": "b1a83a8582fef1dbd09fcdb36ffb3507"
+        }
+      ]
+    }
+  ]
+}

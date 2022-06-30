@@ -6,17 +6,9 @@
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
-        <version>4.31</version>
+        <version>4.41</version>
         <relativePath/>
     </parent>
-
-    <groupId>io.jenkins.plugins</groupId>
-    <artifactId>apimap</artifactId>
-    <name>Apimap.io</name>
-    <version>${revision}${changelist}</version>
-    <packaging>hpi</packaging>
-    <description>Enables automated publishing of API metadata to your Apimap.io instance</description>
-    <url>https://github.com/jenkinsci/apimap-plugin</url>
 
     <licenses>
         <license>
@@ -37,10 +29,19 @@
         </developer>
     </developers>
 
+    <groupId>io.jenkins.plugins</groupId>
+    <artifactId>apimap</artifactId>
+    <name>Apimap.io</name>
+    <version>${revision}${changelist}</version>
+    <packaging>hpi</packaging>
+    <description>Enables automated publishing of API metadata to your Apimap.io instance</description>
+    <url>https://github.com/jenkinsci/apimap-plugin</url>
+
     <properties>
+        <revision>1</revision>
+        <changelist>-SNAPSHOT</changelist>
         <jenkins.version>2.300</jenkins.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.level>8</java.level>
         <git-plugin.version>3.0.5</git-plugin.version>
         <enforcer.skip>true</enforcer.skip>
     </properties>
