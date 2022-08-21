@@ -33,34 +33,36 @@ import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 
 public class FileReader {
-    public static MetadataFile metadataFile(FilePath filePath) throws InterruptedException, MissingRequiredFieldException, UnsupportedVersionException, IOException, FileUnreadableException {
+    public static MetadataFile metadataFile(final FilePath filePath) throws InterruptedException, MissingRequiredFieldException, UnsupportedVersionException, IOException, FileUnreadableException {
         if (filePath == null) throw new FileNotFoundException("[ERROR] Empty metadata file path");
 
-        try (InputStream fileReader = FileReader.readFileInDirectory(filePath)) {
+        try (final InputStream fileReader = FileReader.readFileInDirectory(filePath)) {
             return FileFactory.metadataFromInputStream(fileReader);
         } catch (IOException | InterruptedException ignored) {
             throw new FileUnreadableException("Unable to read file");
         }
     }
 
-    public static TaxonomyFile taxonomyFile(FilePath filePath) throws IOException, InterruptedException, FileUnreadableException {
+    public static TaxonomyFile taxonomyFile(final FilePath filePath) throws IOException, InterruptedException, FileUnreadableException {
         if (filePath == null) throw new FileNotFoundException("[ERROR] Empty taxonomy file path");
 
-        try (InputStream fileReader = FileReader.readFileInDirectory(filePath)) {
+        try (final InputStream fileReader = FileReader.readFileInDirectory(filePath)) {
             return FileFactory.taxonomyFromInputStream(fileReader);
         } catch (IOException | InterruptedException ignored) {
             throw new FileUnreadableException("Unable to read file");
         }
     }
 
-    public static String readDocument(FilePath filePath) throws IncorrectFileTypeException, FileUnreadableException {
+    public static String readDocument(final FilePath filePath) throws IncorrectFileTypeException, FileUnreadableException {
         if(!filePath.getName().endsWith(".md")){
             throw new IncorrectFileTypeException("File must be of type markdown, ending with .md");
         }
 
-        try (InputStream fileReader = FileReader.readFileInDirectory(filePath);
-             InputStreamReader reader = new InputStreamReader(fileReader, StandardCharsets.UTF_8)) {
-            return new BufferedReader(reader)
+        try (final InputStream fileReader = FileReader.readFileInDirectory(filePath);
+             final InputStreamReader reader = new InputStreamReader(fileReader, StandardCharsets.UTF_8);
+             final BufferedReader bufferedReader = new BufferedReader(reader)) {
+
+            return bufferedReader
                     .lines()
                     .collect(Collectors.joining("\n"));
         } catch (IOException | InterruptedException ignored) {
@@ -68,13 +70,13 @@ public class FileReader {
         }
     }
 
-    public static InputStream readFileInDirectory(FilePath file) throws IOException, InterruptedException {
+    public static InputStream readFileInDirectory(final FilePath file) throws IOException, InterruptedException {
         if (file == null) throw new IOException();
         if (!file.exists()) throw new FileNotFoundException();
         return file.read();
     }
 
-    public static FilePath filePath(FilePath basePath, String additionalFilePath) {
+    public static FilePath filePath(final FilePath basePath, final String additionalFilePath) {
         FilePath filePath = basePath;
         if (additionalFilePath != null) filePath = new FilePath(basePath, additionalFilePath);
         return filePath;

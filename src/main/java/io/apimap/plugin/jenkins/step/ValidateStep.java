@@ -38,8 +38,6 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 public class ValidateStep extends Step implements Serializable {
-    private static final Logger LOGGER = Logger.getLogger(PublishStep.class.getName());
-
     public static final String BUILD_STEP_DISPLAY_NAME = "File content validation";
     public static final String BUILD_STEP_FUNCTION_NAME = "validateAPI";
 
@@ -50,7 +48,8 @@ public class ValidateStep extends Step implements Serializable {
     public String taxonomyFile;
 
     @DataBoundConstructor
-    public ValidateStep(String metadataFile, String taxonomyFile) {
+    public ValidateStep(final String metadataFile,
+                        final String taxonomyFile) {
         this.metadataFile = metadataFile;
         this.taxonomyFile = taxonomyFile;
     }
@@ -61,7 +60,7 @@ public class ValidateStep extends Step implements Serializable {
     }
 
     @DataBoundSetter
-    public void setMetadataFile(String metadataFile) {
+    public void setMetadataFile(final String metadataFile) {
         this.metadataFile = metadataFile;
     }
 
@@ -71,12 +70,12 @@ public class ValidateStep extends Step implements Serializable {
     }
 
     @DataBoundSetter
-    public void setTaxonomyFile(String taxonomyFile) {
+    public void setTaxonomyFile(final String taxonomyFile) {
         this.taxonomyFile = taxonomyFile;
     }
 
     @Override
-    public StepExecution start(StepContext stepContext) throws Exception {
+    public StepExecution start(final StepContext stepContext) throws Exception {
         return new ValidateStepExecution(this, stepContext);
     }
 

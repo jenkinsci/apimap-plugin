@@ -34,7 +34,8 @@ public class ValidateResult {
     private final Status status;
     private final String description;
 
-    public ValidateResult(Status status, String description) {
+    public ValidateResult(final Status status,
+                          final String description) {
         this.status = status;
         this.description = description;
     }

@@ -75,13 +75,15 @@ public class PublishStepExecution extends SynchronousStepExecution<PublishResult
 
     private final PublishStep step;
 
-    public PublishStepExecution(PublishStep step, StepContext context){
+    public PublishStepExecution(final PublishStep step,
+                                final StepContext context){
         super(context);
         this.step = step;
     }
 
-    protected PublishResult failure(String description, String token){
-        ApiMap.ApiMapDescriptorImpl descImpl = (ApiMap.ApiMapDescriptorImpl) Jenkins.getInstance().getDescriptorByName(ApiMap.class.getName());
+    protected PublishResult failure(final String description,
+                                    final String token){
+        final ApiMap.ApiMapDescriptorImpl descImpl = (ApiMap.ApiMapDescriptorImpl) Jenkins.getInstance().getDescriptorByName(ApiMap.class.getName());
 
         if (descImpl.updateBuildStatus()) {
             getContext().setResult(Result.FAILURE);
@@ -91,8 +93,10 @@ public class PublishStepExecution extends SynchronousStepExecution<PublishResult
         return new PublishResult(PublishResult.Status.FAILED, description, token);
     }
 
-    protected PublishResult success(String description, String token, MutableBoolean isApiCreate){
-        ApiMap.ApiMapDescriptorImpl descImpl = (ApiMap.ApiMapDescriptorImpl) Jenkins.getInstance().getDescriptorByName(ApiMap.class.getName());
+    protected PublishResult success(final String description,
+                                    final String token,
+                                    final MutableBoolean isApiCreate){
+        final ApiMap.ApiMapDescriptorImpl descImpl = (ApiMap.ApiMapDescriptorImpl) Jenkins.getInstance().getDescriptorByName(ApiMap.class.getName());
 
         PublishResult returnValue;
 
@@ -115,16 +119,16 @@ public class PublishStepExecution extends SynchronousStepExecution<PublishResult
         /*
         * Global
         */
-        ApiMap.ApiMapDescriptorImpl descImpl = (ApiMap.ApiMapDescriptorImpl) Jenkins.getInstance().getDescriptorByName(ApiMap.class.getName());
+        final ApiMap.ApiMapDescriptorImpl descImpl = (ApiMap.ApiMapDescriptorImpl) Jenkins.getInstance().getDescriptorByName(ApiMap.class.getName());
 
-        FilePath path = getContext().get(FilePath.class);
+        final FilePath path = getContext().get(FilePath.class);
         if(path == null) { return failure(FILEPATH_IS_A_NULL_OBJECT, null); }
 
-        RestClientConfiguration configuration;
+        final RestClientConfiguration configuration;
 
         LOGGER.log(Level.FINER, "Reading metadata file");
 
-        MutableBoolean isApiCreated = new MutableBoolean(false);
+        final MutableBoolean isApiCreated = new MutableBoolean(false);
 
         LOGGER.log(Level.FINER, "Creating rest client configuration");
         configuration = RestClientUtil.configuration(this.step.getToken());
@@ -133,7 +137,7 @@ public class PublishStepExecution extends SynchronousStepExecution<PublishResult
          * Metadata
          */
 
-        MetadataFile metadataFile;
+        final MetadataFile metadataFile;
 
         try {
             metadataFile = FileReader.metadataFile(FileReader.filePath(path, this.step.getMetadataFile()));
@@ -142,7 +146,7 @@ public class PublishStepExecution extends SynchronousStepExecution<PublishResult
             }
 
             LOGGER.log(Level.FINER, "Uploading metadata content");
-            MetadataDataRestEntity metadataReturnObject = uploadMetadata(metadataFile, configuration, isApiCreated);
+            final MetadataDataRestEntity metadataReturnObject = uploadMetadata(metadataFile, configuration, isApiCreated);
             if (metadataReturnObject == null) {
                 return failure(UNABLE_TO_UPLOAD_METADATA_ERROR_MESSAGE, configuration.getToken());
             }
@@ -167,11 +171,11 @@ public class PublishStepExecution extends SynchronousStepExecution<PublishResult
         LOGGER.log(Level.FINER, "Reading taxonomy file");
 
         try {
-            TaxonomyFile taxonomyFile = FileReader.taxonomyFile(FileReader.filePath(path, this.step.getTaxonomyFile()));
+            final TaxonomyFile taxonomyFile = FileReader.taxonomyFile(FileReader.filePath(path, this.step.getTaxonomyFile()));
             if (taxonomyFile == null) { return failure(TAXONOMY_FILE_MISSING_ERROR, configuration.getToken()); }
 
             LOGGER.log(Level.FINER, "Uploading taxonomy content");
-            ClassificationRootRestEntity classificationReturnObject = uploadTaxonomy(
+            final ClassificationRootRestEntity classificationReturnObject = uploadTaxonomy(
                     metadataFile.getData().getName(),
                     metadataFile.getData().getApiVersion(),
                     taxonomyFile,
@@ -195,11 +199,11 @@ public class PublishStepExecution extends SynchronousStepExecution<PublishResult
 
         if(descImpl.isAllowReadmeUpload() && this.step.getReadmeFile() != null && !this.step.getReadmeFile().isEmpty()){
             try{
-                String readme = FileReader.readDocument(FileReader.filePath(path, this.step.getReadmeFile()));
+                final String readme = FileReader.readDocument(FileReader.filePath(path, this.step.getReadmeFile()));
                 if (readme == null) { return failure(README_FILE_MISSING_ERROR, configuration.getToken()); }
 
                 LOGGER.log(Level.FINER, "Uploading README.md content");
-                String readmeReturnObject = uploadReadme(
+                final String readmeReturnObject = uploadReadme(
                         metadataFile.getData().getName(),
                         metadataFile.getData().getApiVersion(),
                         readme,
@@ -227,11 +231,11 @@ public class PublishStepExecution extends SynchronousStepExecution<PublishResult
 
         if(descImpl.isAllowChangelogUpload() && this.step.getChangelogFile() != null && !this.step.getChangelogFile().isEmpty()){
             try{
-                String changelog = FileReader.readDocument(FileReader.filePath(path, this.step.getChangelogFile()));
+                final String changelog = FileReader.readDocument(FileReader.filePath(path, this.step.getChangelogFile()));
                 if (changelog == null) { return failure(README_FILE_MISSING_ERROR, configuration.getToken()); }
 
                 LOGGER.log(Level.FINER, "Uploading CHANGELOG.md content");
-                String readmeReturnObject = uploadChangelog(
+                final String readmeReturnObject = uploadChangelog(
                         metadataFile.getData().getName(),
                         metadataFile.getData().getApiVersion(),
                         changelog,
@@ -256,11 +260,13 @@ public class PublishStepExecution extends SynchronousStepExecution<PublishResult
         return success(STEP_COMPLETED_SUCCESSFULLY, configuration.getToken(), isApiCreated);
     }
 
-    protected MetadataDataRestEntity uploadMetadata(MetadataFile metadataFile, RestClientConfiguration configuration, MutableBoolean isApiCreated) throws IOException, InterruptedException, IncorrectTokenException, PublishErrorException {
+    protected MetadataDataRestEntity uploadMetadata(final MetadataFile metadataFile,
+                                                    final RestClientConfiguration configuration,
+                                                    final MutableBoolean isApiCreated) throws IOException, InterruptedException, IncorrectTokenException, PublishErrorException {
         /* Assemble REST entities */
         LOGGER.log(Level.FINER, "Assembling REST entities");
 
-        MetadataDataRestEntity metadataDataApiEntity = new MetadataDataRestEntity(
+        final MetadataDataRestEntity metadataDataApiEntity = new MetadataDataRestEntity(
                 metadataFile.getData().getName(),
                 metadataFile.getData().getDescription(),
                 metadataFile.getData().getVisibility(),
@@ -274,37 +280,37 @@ public class PublishStepExecution extends SynchronousStepExecution<PublishResult
                 metadataFile.getData().getDocumentation()
         );
 
-        ApiDataRestEntity apiDataApiEntity = new ApiDataRestEntity(
+        final ApiDataRestEntity apiDataApiEntity = new ApiDataRestEntity(
                 metadataFile.getData().getName(),
                 this.step.getRepositoryURL()
         );
 
-        ApiVersionDataRestEntity apiVersionDataApiEntity = new ApiVersionDataRestEntity(
+        final ApiVersionDataRestEntity apiVersionDataApiEntity = new ApiVersionDataRestEntity(
                 metadataDataApiEntity.getApiVersion()
         );
 
         /* Setup callback methods */
         LOGGER.log(Level.FINER, "Creating callback methods");
 
-        Consumer<Object> apiCreatedCallback = content -> {
+        final Consumer<Object> apiCreatedCallback = content -> {
             LOGGER.log(Level.FINER, "Setting token " + ((ApiDataRestEntity) content).getMeta().getToken());
             configuration.setToken(((ApiDataRestEntity) content).getMeta().getToken());
             isApiCreated.setValue(true);
         };
 
-        Consumer<Object> apiVersionCreatedCallback = content -> {
+        final Consumer<Object> apiVersionCreatedCallback = content -> {
             LOGGER.log(Level.FINER, content.toString());
         };
 
-        AtomicReference<String> errorMessage = new AtomicReference<>();
-        Consumer<String> errorHandlerCallback = content -> {
+        final AtomicReference<String> errorMessage = new AtomicReference<>();
+        final Consumer<String> errorHandlerCallback = content -> {
             if(content != null) errorMessage.set(content);
         };
 
         /* Performing REST calls */
         LOGGER.log(Level.FINER, "Performing REST calls");
 
-        MetadataDataRestEntity object = IRestClient.withConfiguration(configuration)
+        final MetadataDataRestEntity object = IRestClient.withConfiguration(configuration)
                 .withErrorHandler(errorHandlerCallback)
                 .followCollection(JsonApiRestResponseWrapper.API_COLLECTION)
                 .followCollection(metadataDataApiEntity.getName(), JsonApiRestResponseWrapper.VERSION_COLLECTION)
@@ -321,11 +327,14 @@ public class PublishStepExecution extends SynchronousStepExecution<PublishResult
         return object;
     }
 
-    protected ClassificationRootRestEntity uploadTaxonomy(String apiName, String apiVersion, TaxonomyFile taxonomyFile, RestClientConfiguration configuration) throws IOException, IncorrectTokenException, PublishErrorException {
+    protected ClassificationRootRestEntity uploadTaxonomy(final String apiName,
+                                                          final String apiVersion,
+                                                          final TaxonomyFile taxonomyFile,
+                                                          final RestClientConfiguration configuration) throws IOException, IncorrectTokenException, PublishErrorException {
         /* Assemble REST entities */
         LOGGER.log(Level.FINER, "Assembling REST entities");
 
-        ClassificationRootRestEntity classificationRootApiEntity = new ClassificationRootRestEntity(
+        final ClassificationRootRestEntity classificationRootApiEntity = new ClassificationRootRestEntity(
                 taxonomyFile
                         .getData()
                         .getClassifications()
@@ -337,15 +346,15 @@ public class PublishStepExecution extends SynchronousStepExecution<PublishResult
         /* Setup callback methods */
         LOGGER.log(Level.FINER, "Creating callback methods");
 
-        AtomicReference<String> errorMessage = new AtomicReference<>();
-        Consumer<String> errorHandlerCallback = content -> {
+        final AtomicReference<String> errorMessage = new AtomicReference<>();
+        final Consumer<String> errorHandlerCallback = content -> {
             if(content != null) errorMessage.set(content.toString());
         };
 
         /* Performing REST calls */
         LOGGER.log(Level.FINER, "Performing REST calls");
 
-        ClassificationRootRestEntity returnValue = IRestClient.withConfiguration(configuration)
+        final ClassificationRootRestEntity returnValue = IRestClient.withConfiguration(configuration)
                 .withErrorHandler(errorHandlerCallback)
                 .followCollection(JsonApiRestResponseWrapper.API_COLLECTION)
                 .followCollection(apiName, JsonApiRestResponseWrapper.VERSION_COLLECTION)
@@ -360,20 +369,23 @@ public class PublishStepExecution extends SynchronousStepExecution<PublishResult
         return returnValue;
     }
 
-    protected String uploadReadme(String apiName, String apiVersion, String readme, RestClientConfiguration configuration) throws IOException, IncorrectTokenException, PublishErrorException {
+    protected String uploadReadme(final String apiName,
+                                  final String apiVersion,
+                                  final String readme,
+                                  final RestClientConfiguration configuration) throws IOException, IncorrectTokenException, PublishErrorException {
         LOGGER.log(Level.FINER, "Uploading README.md");
 
         /* Setup callback methods */
         LOGGER.log(Level.FINER, "Creating callback methods");
 
-        AtomicReference<String> errorMessage = new AtomicReference<>();
-        Consumer<String> errorHandlerCallback = content -> {
+        final AtomicReference<String> errorMessage = new AtomicReference<>();
+        final Consumer<String> errorHandlerCallback = content -> {
             if(content != null) errorMessage.set(content.toString());
         };
 
         /* Performing REST calls */
         LOGGER.log(Level.FINER, "Performing REST calls");
-        String returnObject = IRestClient.withConfiguration(configuration)
+        final String returnObject = IRestClient.withConfiguration(configuration)
                 .withErrorHandler(errorHandlerCallback)
                 .followCollection(JsonApiRestResponseWrapper.API_COLLECTION)
                 .followCollection(apiName, JsonApiRestResponseWrapper.VERSION_COLLECTION)
@@ -388,20 +400,23 @@ public class PublishStepExecution extends SynchronousStepExecution<PublishResult
         return returnObject;
     }
 
-    protected String uploadChangelog(String apiName, String apiVersion, String changelog, RestClientConfiguration configuration) throws IOException, IncorrectTokenException, PublishErrorException {
+    protected String uploadChangelog(final String apiName,
+                                     final String apiVersion,
+                                     final String changelog,
+                                     final RestClientConfiguration configuration) throws IOException, IncorrectTokenException, PublishErrorException {
         LOGGER.log(Level.FINER, "Uploading CHANGELOG.md");
 
         /* Setup callback methods */
         LOGGER.log(Level.FINER, "Creating callback methods");
 
-        AtomicReference<String> errorMessage = new AtomicReference<>();
-        Consumer<String> errorHandlerCallback = content -> {
+        final AtomicReference<String> errorMessage = new AtomicReference<>();
+        final Consumer<String> errorHandlerCallback = content -> {
             if(content != null) errorMessage.set(content.toString());
         };
 
         /* Performing REST calls */
         LOGGER.log(Level.FINER, "Performing REST calls");
-        String returnObject = IRestClient.withConfiguration(configuration)
+        final String returnObject = IRestClient.withConfiguration(configuration)
                 .withErrorHandler(errorHandlerCallback)
                 .followCollection(JsonApiRestResponseWrapper.API_COLLECTION)
                 .followCollection(apiName, JsonApiRestResponseWrapper.VERSION_COLLECTION)

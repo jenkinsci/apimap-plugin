@@ -54,7 +54,7 @@ public class PublishStep extends Step implements Serializable {
     public String token;
 
     @DataBoundSetter
-    public void setMetadataFile(String metadataFile) {
+    public void setMetadataFile(final String metadataFile) {
         this.metadataFile = metadataFile;
     }
 
@@ -64,7 +64,7 @@ public class PublishStep extends Step implements Serializable {
     }
 
     @DataBoundSetter
-    public void setTaxonomyFile(String taxonomyFile) {
+    public void setTaxonomyFile(final String taxonomyFile) {
         this.taxonomyFile = taxonomyFile;
     }
 
@@ -74,7 +74,7 @@ public class PublishStep extends Step implements Serializable {
     }
 
     @DataBoundSetter
-    public void setRepositoryURL(String repositoryURL) {
+    public void setRepositoryURL(final String repositoryURL) {
         this.repositoryURL = repositoryURL;
     }
 
@@ -83,7 +83,7 @@ public class PublishStep extends Step implements Serializable {
     }
 
     @DataBoundSetter
-    public void setToken(String token) {
+    public void setToken(final String token) {
         this.token = token;
     }
 
@@ -92,7 +92,7 @@ public class PublishStep extends Step implements Serializable {
     }
 
     @DataBoundSetter
-    public void setReadmeFile(String readmeFile) {
+    public void setReadmeFile(final String readmeFile) {
         this.readmeFile = readmeFile;
     }
 
@@ -102,7 +102,7 @@ public class PublishStep extends Step implements Serializable {
     }
 
     @DataBoundSetter
-    public void setChangelogFile(String changelogFile) {
+    public void setChangelogFile(final String changelogFile) {
         this.changelogFile = changelogFile;
     }
 
@@ -112,11 +112,11 @@ public class PublishStep extends Step implements Serializable {
     }
 
     @DataBoundConstructor
-    public PublishStep(String metadataFile,
-                       String taxonomyFile,
-                       String readmeFile,
-                       String changelogFile,
-                       String token) {
+    public PublishStep(final String metadataFile,
+                       final String taxonomyFile,
+                       final String readmeFile,
+                       final String changelogFile,
+                       final String token) {
         this.metadataFile = metadataFile;
         this.taxonomyFile = taxonomyFile;
         this.readmeFile = readmeFile;
@@ -125,7 +125,7 @@ public class PublishStep extends Step implements Serializable {
     }
 
     @Override
-    public StepExecution start(StepContext stepContext) throws Exception {
+    public StepExecution start(final StepContext stepContext) throws Exception {
         return new PublishStepExecution(this, stepContext);
     }
 
