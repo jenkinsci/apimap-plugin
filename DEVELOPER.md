@@ -17,7 +17,7 @@ This section is targeted to developers that want to use the Jenkins Plugin provi
 
 #### Debug Mode
 
-More extensive logging. Please not that the output is generatesing System.out.println and will 
+More extensive logging. Please note that the output is generated using System.out.println and will be printed to STDOUT.
 
 #### Dryrun Mode
 
@@ -46,10 +46,10 @@ This plugin is created to be used with Pipeline-as-Code and returns a result obj
 
 The following Java-object is returned from the validate step:
 
-| Variable | Description                                                                                  |
-|----------|----------------------------------------------------------------------------------------------|
+| Variable    | Description                                                                                  |
+|-------------|----------------------------------------------------------------------------------------------|
 | status      | The status of the action. If the API was created, updated, something failed or if it crashed |
-| description | An explenation to the status |
+| description | An explanation to the status                                                                 |
 
 ```java
 public class ValidateResult {
@@ -86,11 +86,11 @@ public class ValidateResult {
 
 The following Java-object is returned from the publish step:
 
-| Variable    | Description                                                                                  |
-|-------------|----------------------------------------------------------------------------------------------|
-| status      | The status of the action. If the API was created, updated, something failed or if it crashed |
-| description | An explenation to the status |
-| token       | If the status is created theres is also a token returned with the result. This token must be used in any future updates|
+| Variable    | Description                                                                                                             |
+|-------------|-------------------------------------------------------------------------------------------------------------------------|
+| status      | The status of the action. If the API was created, updated, something failed or if it crashed                            |
+| description | An explanation to the status                                                                                            |
+| token       | If the status is created theres is also a token returned with the result. This token must be used in any future updates |
 
 > Note: Do not use the token or description to test if the API is created or updated. Use the status ENUM to determine the status.
 

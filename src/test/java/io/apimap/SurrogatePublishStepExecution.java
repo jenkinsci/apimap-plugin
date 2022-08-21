@@ -40,7 +40,7 @@ public class SurrogatePublishStepExecution extends PublishStepExecution {
     }
 
     public PublishResult failure(String description){
-        return super.failure(description);
+        return super.failure(description, null);
     }
 
     public PublishResult success(String description, String token, MutableBoolean isApiCreated){

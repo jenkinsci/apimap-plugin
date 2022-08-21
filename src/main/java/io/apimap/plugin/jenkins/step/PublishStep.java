@@ -41,27 +41,41 @@ public class PublishStep extends Step implements Serializable {
     public static final String BUILD_STEP_DISPLAY_NAME = "File content publishing";
     public static final String BUILD_STEP_FUNCTION_NAME = "publishAPI";
 
+    public static final String DEFAULT_METADATA_FILE_VALUE = "apimap/metadata.apimap";
+    public static final String DEFAULT_TAXONOMY_FILE_VALUE = "apimap/taxonomy.apimap";
+    public static final String DEFAULT_README_FILE_VALUE = "README.md";
+    public static final String DEFAULT_CHANGELOG_FILE_VALUE = "CHANGELOG.md";
+
     public String metadataFile;
     public String taxonomyFile;
+    public String readmeFile;
+    public String changelogFile;
     public String repositoryURL;
     public String token;
 
+    @DataBoundSetter
+    public void setMetadataFile(final String metadataFile) {
+        this.metadataFile = metadataFile;
+    }
+
     public String getMetadataFile() {
+        if(metadataFile == null) return DEFAULT_METADATA_FILE_VALUE;
         return metadataFile;
     }
 
     @DataBoundSetter
-    public void setMetadataFile(String metadataFile) {
-        this.metadataFile = metadataFile;
+    public void setTaxonomyFile(final String taxonomyFile) {
+        this.taxonomyFile = taxonomyFile;
     }
 
     public String getTaxonomyFile() {
+        if(taxonomyFile == null) return DEFAULT_TAXONOMY_FILE_VALUE;
         return taxonomyFile;
     }
 
     @DataBoundSetter
-    public void setTaxonomyFile(String taxonomyFile) {
-        this.taxonomyFile = taxonomyFile;
+    public void setRepositoryURL(final String repositoryURL) {
+        this.repositoryURL = repositoryURL;
     }
 
     public String getRepositoryURL() {
@@ -69,8 +83,8 @@ public class PublishStep extends Step implements Serializable {
     }
 
     @DataBoundSetter
-    public void setRepositoryURL(String repositoryURL) {
-        this.repositoryURL = repositoryURL;
+    public void setToken(final String token) {
+        this.token = token;
     }
 
     public String getToken() {
@@ -78,19 +92,40 @@ public class PublishStep extends Step implements Serializable {
     }
 
     @DataBoundSetter
-    public void setToken(String token) {
-        this.token = token;
+    public void setReadmeFile(final String readmeFile) {
+        this.readmeFile = readmeFile;
+    }
+
+    public String getReadmeFile() {
+        if(readmeFile == null) return DEFAULT_README_FILE_VALUE;
+        return readmeFile;
+    }
+
+    @DataBoundSetter
+    public void setChangelogFile(final String changelogFile) {
+        this.changelogFile = changelogFile;
+    }
+
+    public String getChangelogFile() {
+        if(changelogFile == null) return DEFAULT_CHANGELOG_FILE_VALUE;
+        return changelogFile;
     }
 
     @DataBoundConstructor
-    public PublishStep(String metadataFile, String taxonomyFile, String token) {
+    public PublishStep(final String metadataFile,
+                       final String taxonomyFile,
+                       final String readmeFile,
+                       final String changelogFile,
+                       final String token) {
         this.metadataFile = metadataFile;
         this.taxonomyFile = taxonomyFile;
+        this.readmeFile = readmeFile;
+        this.changelogFile = changelogFile;
         this.token = token;
     }
 
     @Override
-    public StepExecution start(StepContext stepContext) throws Exception {
+    public StepExecution start(final StepContext stepContext) throws Exception {
         return new PublishStepExecution(this, stepContext);
     }
 

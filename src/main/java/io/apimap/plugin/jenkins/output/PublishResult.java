@@ -34,13 +34,16 @@ public class PublishResult {
     private final String description;
     private final String token;
 
-    public PublishResult(Status status, String description) {
+    public PublishResult(final Status status,
+                         final String description) {
         this.status = status;
         this.description = description;
         this.token = null;
     }
 
-    public PublishResult(Status status, String description, String token) {
+    public PublishResult(final Status status,
+                         final String description,
+                         final String token) {
         this.status = status;
         this.description = description;
         this.token = token;

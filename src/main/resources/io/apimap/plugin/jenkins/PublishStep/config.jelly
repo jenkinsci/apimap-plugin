@@ -1,10 +1,16 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
     <f:entry title="Metadata File" field="metadataFile">
-        <f:textbox />
+        <f:textbox default="apimap/metadata.apimap"/>
     </f:entry>
     <f:entry title="Taxonomy File" field="taxonomyFile">
-        <f:textbox />
+        <f:textbox default="apimap/taxonomy.apimap"/>
+    </f:entry>
+    <f:entry title="README.md File" field="readmeFile">
+        <f:textbox default="README.md"/>
+    </f:entry>
+    <f:entry title="CHANGELOG.md File" field="changelogFile">
+        <f:textbox default="CHANGELOG.md" />
     </f:entry>
     <f:entry title="Token" field="token">
         <f:textbox />

@@ -44,6 +44,21 @@ This is the Jenkins plugin, created to automatically upload metadata and taxonom
 
 The following is an example of how to use the plugin inside a Jenkinsfile
 
+#### Default values (used if not overwritten when used)
+
+The plugin is configured by default with the following values. If a value is not overwritten with another value the defaults will be used.
+
+| Argument           | Default Value            |
+|--------------------|--------------------------|
+| metadataFile       | "apimap/metadata.apimap" |
+| taxonomyFile       | "apimap/taxonomy.apimap" |
+| readmeFile         | "README.md"              |
+| changelogFile      | "CHANGELOG.md"           |
+
+#### Pipeline as Code
+
+The following example show how to use the plugin in a Pipeline as Code environment. 
+
 ```groovy
 pipeline {
     agent any
@@ -56,7 +71,9 @@ pipeline {
         stage('Validate'){
             steps{
                 script{
-                    def result = validateAPI metadataFile: 'apimap/metadata.apimap', taxonomyFile: 'apimap/taxonomy.apimap'
+                    def result = validateAPI metadataFile: 'apimap/metadata.apimap', 
+                            taxonomyFile: 'apimap/taxonomy.apimap'
+                    
                     echo result.getDescription()
                 }
             }
@@ -64,8 +81,14 @@ pipeline {
         stage('Publish'){
             steps{
                 script{
-                    def result = publishAPI metadataFile: 'apimap/metadata.apimap', taxonomyFile: 'apimap/taxonomy.apimap'
+                    def result = publishAPI metadataFile: 'apimap/metadata.apimap',
+                            taxonomyFile: 'apimap/taxonomy.apimap',
+                            readmeFile: 'README.md',
+                            changelogFile: 'CHANGELOG.md'
+
+                    echo result.getStatus().toString()
                     echo result.getDescription()
+                    echo result.getToken()
                 }
             }
         }

@@ -24,27 +24,30 @@ import io.apimap.plugin.jenkins.ApiMap;
 import jenkins.model.Jenkins;
 
 import java.io.IOException;
-import java.util.regex.Pattern;
 
 public class RestClientUtil {
     public static RestClientConfiguration configuration(String token) throws IOException {
-        Jenkins instance = Jenkins.getInstanceOrNull();
+        final Jenkins instance = Jenkins.getInstanceOrNull();
 
         if (instance == null) {
             throw new IOException("Unable to find Jenkins Instance");
         }
 
-        ApiMap.ApiMapDescriptorImpl descImpl = (ApiMap.ApiMapDescriptorImpl) instance.getDescriptorByName(ApiMap.class.getName());
+        final ApiMap.ApiMapDescriptorImpl descImpl = (ApiMap.ApiMapDescriptorImpl) instance.getDescriptorByName(ApiMap.class.getName());
 
         if (descImpl.getUrl() == null) {
             throw new IOException("Missing required root URL");
         }
 
-        return new RestClientConfiguration(
+        final RestClientConfiguration client = new RestClientConfiguration(
                 token,
                 descImpl.getUrl(),
                 descImpl.isDebugMode()
         );
+
+        client.setDryRunMode(descImpl.isDryRunMode());
+
+        return client;
     }
 
     public static boolean bareboneURL(String url){

@@ -21,7 +21,6 @@ package io.apimap.plugin.jenkins.step.validate;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import hudson.FilePath;
 import hudson.model.Result;
 import io.apimap.file.metadata.MetadataFile;
@@ -54,14 +53,15 @@ public class ValidateStepExecution extends SynchronousStepExecution<ValidateResu
 
     private final ValidateStep step;
 
-
-    public ValidateStepExecution(ValidateStep step, StepContext context){
+    public ValidateStepExecution(final ValidateStep step,
+                                 final StepContext context){
         super(context);
         this.step = step;
     }
 
-    protected ValidateResult failure(String description, ValidateResult.Status result){
-        ApiMap.ApiMapDescriptorImpl descImpl = (ApiMap.ApiMapDescriptorImpl) Jenkins.getInstance().getDescriptorByName(ApiMap.class.getName());
+    protected ValidateResult failure(final String description,
+                                     final ValidateResult.Status result){
+        final ApiMap.ApiMapDescriptorImpl descImpl = (ApiMap.ApiMapDescriptorImpl) Jenkins.getInstance().getDescriptorByName(ApiMap.class.getName());
 
         if (descImpl.updateBuildStatus()) {
             getContext().setResult(Result.FAILURE);
@@ -71,10 +71,10 @@ public class ValidateStepExecution extends SynchronousStepExecution<ValidateResu
         return new ValidateResult(result, description);
     }
 
-    protected ValidateResult success(String description){
-        ApiMap.ApiMapDescriptorImpl descImpl = (ApiMap.ApiMapDescriptorImpl) Jenkins.getInstance().getDescriptorByName(ApiMap.class.getName());
+    protected ValidateResult success(final String description){
+        final ApiMap.ApiMapDescriptorImpl descImpl = (ApiMap.ApiMapDescriptorImpl) Jenkins.getInstance().getDescriptorByName(ApiMap.class.getName());
 
-        ValidateResult returnValue = new ValidateResult(ValidateResult.Status.VALID, description);
+        final ValidateResult returnValue = new ValidateResult(ValidateResult.Status.VALID, description);
 
         if(descImpl.updateBuildStatus()) {
             getContext().setResult(Result.SUCCESS);
@@ -86,12 +86,12 @@ public class ValidateStepExecution extends SynchronousStepExecution<ValidateResu
 
     @Override
     protected ValidateResult run() throws Exception {
-        FilePath path = getContext().get(FilePath.class);
+        final FilePath path = getContext().get(FilePath.class);
         if(path == null) { return failure(FILEPATH_IS_A_NULL_OBJECT, ValidateResult.Status.MISSING); }
 
-        LOGGER.log(Level.INFO, "Reading metadata file");
+        LOGGER.log(Level.FINER, "Reading metadata file");
         try {
-            MetadataFile metadataFile = FileReader.metadataFile(FileReader.filePath(path, this.step.getMetadataFile()));
+            final MetadataFile metadataFile = FileReader.metadataFile(FileReader.filePath(path, this.step.getMetadataFile()));
             if (metadataFile == null) {
                 return failure(UNABLE_TO_READ_METADATA_ERROR_MESSAGE, ValidateResult.Status.MISSING);
             }
@@ -105,7 +105,7 @@ public class ValidateStepExecution extends SynchronousStepExecution<ValidateResu
 
         LOGGER.log(Level.INFO, "Reading taxonomy file");
         try {
-            TaxonomyFile taxonomyFile = FileReader.taxonomyFile(FileReader.filePath(path, this.step.getTaxonomyFile()));
+            final TaxonomyFile taxonomyFile = FileReader.taxonomyFile(FileReader.filePath(path, this.step.getTaxonomyFile()));
             if (taxonomyFile == null) {
                 return failure(UNABLE_TO_READ_TAXONOMY_ERROR_MESSAGE, ValidateResult.Status.MISSING);
             }
