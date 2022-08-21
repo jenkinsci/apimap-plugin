@@ -25,6 +25,7 @@ import io.apimap.file.exceptions.MissingRequiredFieldException;
 import io.apimap.file.exceptions.UnsupportedVersionException;
 import io.apimap.file.metadata.MetadataFile;
 import io.apimap.file.taxonomy.TaxonomyFile;
+import io.apimap.plugin.jenkins.exceptions.FileUnreadableException;
 import io.apimap.plugin.jenkins.exceptions.IncorrectFileTypeException;
 
 import java.io.*;
@@ -32,43 +33,39 @@ import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 
 public class FileReader {
-    public static MetadataFile metadataFile(FilePath filePath) throws InterruptedException, MissingRequiredFieldException, UnsupportedVersionException, IOException {
+    public static MetadataFile metadataFile(FilePath filePath) throws InterruptedException, MissingRequiredFieldException, UnsupportedVersionException, IOException, FileUnreadableException {
         if (filePath == null) throw new FileNotFoundException("[ERROR] Empty metadata file path");
 
         try (InputStream fileReader = FileReader.readFileInDirectory(filePath)) {
             return FileFactory.metadataFromInputStream(fileReader);
-        } catch (Exception ignored) {}
-
-        return null;
+        } catch (Exception ignored) {
+            throw new FileUnreadableException("Unable to read file");
+        }
     }
 
-    public static TaxonomyFile taxonomyFile(FilePath filePath) throws IOException, InterruptedException {
+    public static TaxonomyFile taxonomyFile(FilePath filePath) throws IOException, InterruptedException, FileUnreadableException {
         if (filePath == null) throw new FileNotFoundException("[ERROR] Empty taxonomy file path");
 
         try (InputStream fileReader = FileReader.readFileInDirectory(filePath)) {
             return FileFactory.taxonomyFromInputStream(fileReader);
-        } catch (Exception ignored) {}
-
-        return null;
+        } catch (Exception ignored) {
+            throw new FileUnreadableException("Unable to read file");
+        }
     }
 
-    public static String readDocument(FilePath filePath) throws IOException, InterruptedException, IncorrectFileTypeException {
+    public static String readDocument(FilePath filePath) throws IncorrectFileTypeException, FileUnreadableException {
         if(!filePath.getName().endsWith(".md")){
             throw new IncorrectFileTypeException("File must be of type markdown, ending with .md");
         }
 
         try (InputStream fileReader = FileReader.readFileInDirectory(filePath)) {
-            String returnValue = new BufferedReader(
+            return new BufferedReader(
                     new InputStreamReader(fileReader, StandardCharsets.UTF_8))
                     .lines()
                     .collect(Collectors.joining("\n"));
-
-            fileReader.close();
-            return returnValue;
         } catch (Exception ignored) {
+            throw new FileUnreadableException("Unable to read file");
         }
-
-        return "";
     }
 
     public static InputStream readFileInDirectory(FilePath file) throws IOException, InterruptedException {
