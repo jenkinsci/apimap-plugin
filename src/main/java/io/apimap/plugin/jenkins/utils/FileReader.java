@@ -35,15 +35,21 @@ public class FileReader {
     public static MetadataFile metadataFile(FilePath filePath) throws InterruptedException, MissingRequiredFieldException, UnsupportedVersionException, IOException {
         if (filePath == null) throw new FileNotFoundException("[ERROR] Empty metadata file path");
 
-        InputStream fileReader = FileReader.readFileInDirectory(filePath);
-        return FileFactory.metadataFromInputStream(fileReader);
+        try (InputStream fileReader = FileReader.readFileInDirectory(filePath)) {
+            return FileFactory.metadataFromInputStream(fileReader);
+        } catch (Exception ignored) {}
+
+        return null;
     }
 
     public static TaxonomyFile taxonomyFile(FilePath filePath) throws IOException, InterruptedException {
         if (filePath == null) throw new FileNotFoundException("[ERROR] Empty taxonomy file path");
 
-        InputStream fileReader = FileReader.readFileInDirectory(filePath);
-        return FileFactory.taxonomyFromInputStream(fileReader);
+        try (InputStream fileReader = FileReader.readFileInDirectory(filePath)) {
+            return FileFactory.taxonomyFromInputStream(fileReader);
+        } catch (Exception ignored) {}
+
+        return null;
     }
 
     public static String readDocument(FilePath filePath) throws IOException, InterruptedException, IncorrectFileTypeException {
@@ -51,12 +57,18 @@ public class FileReader {
             throw new IncorrectFileTypeException("File must be of type markdown, ending with .md");
         }
 
-        InputStream fileReader = FileReader.readFileInDirectory(filePath);
+        try (InputStream fileReader = FileReader.readFileInDirectory(filePath)) {
+            String returnValue = new BufferedReader(
+                    new InputStreamReader(fileReader, StandardCharsets.UTF_8))
+                    .lines()
+                    .collect(Collectors.joining("\n"));
 
-        return new BufferedReader(
-                new InputStreamReader(fileReader, StandardCharsets.UTF_8))
-                .lines()
-                .collect(Collectors.joining("\n"));
+            fileReader.close();
+            return returnValue;
+        } catch (Exception ignored) {
+        }
+
+        return "";
     }
 
     public static InputStream readFileInDirectory(FilePath file) throws IOException, InterruptedException {
