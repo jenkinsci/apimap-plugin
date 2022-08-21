@@ -58,9 +58,9 @@ public class FileReader {
             throw new IncorrectFileTypeException("File must be of type markdown, ending with .md");
         }
 
-        try (InputStream fileReader = FileReader.readFileInDirectory(filePath)) {
-            return new BufferedReader(
-                    new InputStreamReader(fileReader, StandardCharsets.UTF_8))
+        try (InputStream fileReader = FileReader.readFileInDirectory(filePath);
+             InputStreamReader reader = new InputStreamReader(fileReader, StandardCharsets.UTF_8)) {
+            return new BufferedReader(reader)
                     .lines()
                     .collect(Collectors.joining("\n"));
         } catch (IOException | InterruptedException ignored) {
