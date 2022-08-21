@@ -7,6 +7,7 @@ import io.apimap.file.exceptions.MissingRequiredFieldException;
 import io.apimap.file.exceptions.UnsupportedVersionException;
 import io.apimap.file.metadata.MetadataFile;
 import io.apimap.file.taxonomy.TaxonomyFile;
+import io.apimap.plugin.jenkins.exceptions.FileUnreadableException;
 import io.apimap.plugin.jenkins.utils.FileReader;
 import org.apache.tools.ant.filters.StringInputStream;
 import org.junit.Assert;
@@ -61,7 +62,7 @@ public class FileReaderTest {
         );
         fileReader.when(() -> FileReader.readFileInDirectory(any())).thenReturn(inputStream);
 
-        Assert.assertThrows(IOException.class,
+        Assert.assertThrows(io.apimap.plugin.jenkins.exceptions.FileUnreadableException.class,
                 ()->{
                        MetadataFile object = FileReader.metadataFile(filePath);
                     fileReader.close();
@@ -70,7 +71,7 @@ public class FileReaderTest {
     }
 
     @Test
-    public void readMetadataFile_didSucceed() throws MissingRequiredFieldException, IOException, InterruptedException, UnsupportedVersionException {
+    public void readMetadataFile_didSucceed() throws MissingRequiredFieldException, IOException, InterruptedException, UnsupportedVersionException, FileUnreadableException {
         FilePath filePath = Mockito.mock(FilePath.class);
 
         MockedStatic<FileReader> fileReader = Mockito.mockStatic(FileReader.class, Mockito.CALLS_REAL_METHODS);
@@ -121,7 +122,7 @@ public class FileReaderTest {
         fileReader.when(() -> FileReader.readFileInDirectory(any())).thenReturn(inputStream);
         fileReader.close();
 
-        Assert.assertThrows(IOException.class,
+        Assert.assertThrows(io.apimap.plugin.jenkins.exceptions.FileUnreadableException.class,
                 ()->{
                     TaxonomyFile object = FileReader.taxonomyFile(filePath);
                     fileReader.close();
@@ -130,7 +131,7 @@ public class FileReaderTest {
     }
 
     @Test
-    public void readTaxonomyFile_didSucceed() throws MissingRequiredFieldException, IOException, InterruptedException, UnsupportedVersionException {
+    public void readTaxonomyFile_didSucceed() throws MissingRequiredFieldException, IOException, InterruptedException, UnsupportedVersionException, FileUnreadableException {
         FilePath filePath = Mockito.mock(FilePath.class);
 
         MockedStatic<FileReader> fileReader = Mockito.mockStatic(FileReader.class, Mockito.CALLS_REAL_METHODS);
