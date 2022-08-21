@@ -38,7 +38,7 @@ public class FileReader {
 
         try (InputStream fileReader = FileReader.readFileInDirectory(filePath)) {
             return FileFactory.metadataFromInputStream(fileReader);
-        } catch (Exception ignored) {
+        } catch (IOException | InterruptedException ignored) {
             throw new FileUnreadableException("Unable to read file");
         }
     }
@@ -48,7 +48,7 @@ public class FileReader {
 
         try (InputStream fileReader = FileReader.readFileInDirectory(filePath)) {
             return FileFactory.taxonomyFromInputStream(fileReader);
-        } catch (Exception ignored) {
+        } catch (IOException | InterruptedException ignored) {
             throw new FileUnreadableException("Unable to read file");
         }
     }
@@ -63,7 +63,7 @@ public class FileReader {
                     new InputStreamReader(fileReader, StandardCharsets.UTF_8))
                     .lines()
                     .collect(Collectors.joining("\n"));
-        } catch (Exception ignored) {
+        } catch (IOException | InterruptedException ignored) {
             throw new FileUnreadableException("Unable to read file");
         }
     }
