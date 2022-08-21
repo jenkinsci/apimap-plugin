@@ -43,6 +43,9 @@ public class ValidateStep extends Step implements Serializable {
     public static final String BUILD_STEP_DISPLAY_NAME = "File content validation";
     public static final String BUILD_STEP_FUNCTION_NAME = "validateAPI";
 
+    public static final String DEFAULT_METADATA_FILE_VALUE = "apimap/metadata.apimap";
+    public static final String DEFAULT_TAXONOMY_FILE_VALUE = "apimap/taxonomy.apimap";
+
     public String metadataFile;
     public String taxonomyFile;
 
@@ -53,6 +56,7 @@ public class ValidateStep extends Step implements Serializable {
     }
 
     public String getMetadataFile() {
+        if(metadataFile == null) return DEFAULT_METADATA_FILE_VALUE;
         return metadataFile;
     }
 
@@ -62,6 +66,7 @@ public class ValidateStep extends Step implements Serializable {
     }
 
     public String getTaxonomyFile() {
+        if(taxonomyFile == null) return DEFAULT_TAXONOMY_FILE_VALUE;
         return taxonomyFile;
     }
 

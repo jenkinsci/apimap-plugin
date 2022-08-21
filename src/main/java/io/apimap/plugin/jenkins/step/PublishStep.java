@@ -41,22 +41,26 @@ public class PublishStep extends Step implements Serializable {
     public static final String BUILD_STEP_DISPLAY_NAME = "File content publishing";
     public static final String BUILD_STEP_FUNCTION_NAME = "publishAPI";
 
+    public static final String DEFAULT_METADATA_FILE_VALUE = "apimap/metadata.apimap";
+    public static final String DEFAULT_TAXONOMY_FILE_VALUE = "apimap/taxonomy.apimap";
+    public static final String DEFAULT_README_FILE_VALUE = "README.md";
+    public static final String DEFAULT_CHANGELOG_FILE_VALUE = "CHANGELOG.md";
+
     public String metadataFile;
     public String taxonomyFile;
+    public String readmeFile;
+    public String changelogFile;
     public String repositoryURL;
     public String token;
-
-    public String getMetadataFile() {
-        return metadataFile;
-    }
 
     @DataBoundSetter
     public void setMetadataFile(String metadataFile) {
         this.metadataFile = metadataFile;
     }
 
-    public String getTaxonomyFile() {
-        return taxonomyFile;
+    public String getMetadataFile() {
+        if(metadataFile == null) return DEFAULT_METADATA_FILE_VALUE;
+        return metadataFile;
     }
 
     @DataBoundSetter
@@ -64,8 +68,9 @@ public class PublishStep extends Step implements Serializable {
         this.taxonomyFile = taxonomyFile;
     }
 
-    public String getRepositoryURL() {
-        return repositoryURL;
+    public String getTaxonomyFile() {
+        if(taxonomyFile == null) return DEFAULT_TAXONOMY_FILE_VALUE;
+        return taxonomyFile;
     }
 
     @DataBoundSetter
@@ -73,8 +78,8 @@ public class PublishStep extends Step implements Serializable {
         this.repositoryURL = repositoryURL;
     }
 
-    public String getToken() {
-        return token;
+    public String getRepositoryURL() {
+        return repositoryURL;
     }
 
     @DataBoundSetter
@@ -82,10 +87,40 @@ public class PublishStep extends Step implements Serializable {
         this.token = token;
     }
 
+    public String getToken() {
+        return token;
+    }
+
+    @DataBoundSetter
+    public void setReadmeFile(String readmeFile) {
+        this.readmeFile = readmeFile;
+    }
+
+    public String getReadmeFile() {
+        if(readmeFile == null) return DEFAULT_README_FILE_VALUE;
+        return readmeFile;
+    }
+
+    @DataBoundSetter
+    public void setChangelogFile(String changelogFile) {
+        this.changelogFile = changelogFile;
+    }
+
+    public String getChangelogFile() {
+        if(changelogFile == null) return DEFAULT_CHANGELOG_FILE_VALUE;
+        return changelogFile;
+    }
+
     @DataBoundConstructor
-    public PublishStep(String metadataFile, String taxonomyFile, String token) {
+    public PublishStep(String metadataFile,
+                       String taxonomyFile,
+                       String readmeFile,
+                       String changelogFile,
+                       String token) {
         this.metadataFile = metadataFile;
         this.taxonomyFile = taxonomyFile;
+        this.readmeFile = readmeFile;
+        this.changelogFile = changelogFile;
         this.token = token;
     }
 

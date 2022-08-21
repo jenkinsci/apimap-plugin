@@ -33,14 +33,15 @@ import io.apimap.client.exception.IncorrectTokenException;
 import io.apimap.file.metadata.MetadataFile;
 import io.apimap.file.taxonomy.TaxonomyFile;
 import io.apimap.plugin.jenkins.ApiMap;
+import io.apimap.plugin.jenkins.exceptions.IncorrectFileTypeException;
 import io.apimap.plugin.jenkins.exceptions.PublishErrorException;
 import io.apimap.plugin.jenkins.output.PublishResult;
 import io.apimap.plugin.jenkins.step.PublishStep;
 import io.apimap.plugin.jenkins.utils.FileReader;
 import io.apimap.plugin.jenkins.utils.RestClientUtil;
 import jenkins.model.Jenkins;
-import org.apache.commons.lang.mutable.Mutable;
 import org.apache.commons.lang.mutable.MutableBoolean;
+import org.apache.hc.core5.http.ContentType;
 import org.jenkinsci.plugins.workflow.steps.StepContext;
 import org.jenkinsci.plugins.workflow.steps.SynchronousStepExecution;
 
@@ -59,10 +60,16 @@ public class PublishStepExecution extends SynchronousStepExecution<PublishResult
     public static final String FILEPATH_IS_A_NULL_OBJECT = "Filepath returned as a null object";
     public static final String METADATA_FILE_MISSING_ERROR = "Unable to read metadata file";
     public static final String TAXONOMY_FILE_MISSING_ERROR = "Unable to read taxonomy file";
-    public static final String UNABLE_TO_UPLOAD_METADATA_ERROR_MESSAGE = "Unable to upload metadata";
-    public static final String UNABLE_TO_UPLOAD_TAXONOMY_ERROR_MESSAGE = "Unable to upload taxonomy classifications";
+    public static final String README_FILE_MISSING_ERROR = "Unable to read README.md file";
+    public static final String CHANGELOG_FILE_MISSING_ERROR = "Unable to read CHANGELOG.md file";
+    public static final String UNABLE_TO_UPLOAD_METADATA_ERROR_MESSAGE = "Unable to upload metadata. Please contact your system administrator";
+    public static final String UNABLE_TO_UPLOAD_TAXONOMY_ERROR_MESSAGE = "Unable to upload taxonomy classifications. Please contact your system administrator";
+    public static final String UNABLE_TO_UPLOAD_README_ERROR_MESSAGE = "Unable to upload README.md classifications. Please contact your system administrator";
+    public static final String UNABLE_TO_UPLOAD_CHANGELOG_ERROR_MESSAGE = "Unable to upload CHANGELOG.md classifications. Please contact your system administrator";
     public static final String MISSING_OR_INVALID_API_TOKEN_ERROR_MESSAGE = "Unable to find correct API token";
     public static final String STEP_COMPLETED_SUCCESSFULLY = "Successfully published information";
+    public static final String MARKDOWN_FILE_FORMAT_REQUIRED = "File must be of type markdown, ending with .md";
+
 
     private static final long serialVersionUID = 1L;
 
@@ -73,7 +80,7 @@ public class PublishStepExecution extends SynchronousStepExecution<PublishResult
         this.step = step;
     }
 
-    protected PublishResult failure(String description){
+    protected PublishResult failure(String description, String token){
         ApiMap.ApiMapDescriptorImpl descImpl = (ApiMap.ApiMapDescriptorImpl) Jenkins.getInstance().getDescriptorByName(ApiMap.class.getName());
 
         if (descImpl.updateBuildStatus()) {
@@ -81,7 +88,7 @@ public class PublishStepExecution extends SynchronousStepExecution<PublishResult
             getContext().onFailure(new IOException(description));
         }
 
-        return new PublishResult(PublishResult.Status.FAILED, description);
+        return new PublishResult(PublishResult.Status.FAILED, description, token);
     }
 
     protected PublishResult success(String description, String token, MutableBoolean isApiCreate){
@@ -105,67 +112,145 @@ public class PublishStepExecution extends SynchronousStepExecution<PublishResult
 
     @Override
     protected PublishResult run() throws Exception {
-        FilePath path = getContext().get(FilePath.class);
-        if(path == null) { return failure(FILEPATH_IS_A_NULL_OBJECT); }
+        /*
+        * Global
+        */
+        ApiMap.ApiMapDescriptorImpl descImpl = (ApiMap.ApiMapDescriptorImpl) Jenkins.getInstance().getDescriptorByName(ApiMap.class.getName());
 
-        MetadataFile metadataFile;
+        FilePath path = getContext().get(FilePath.class);
+        if(path == null) { return failure(FILEPATH_IS_A_NULL_OBJECT, null); }
+
         RestClientConfiguration configuration;
 
-        LOGGER.log(Level.INFO, "Reading metadata file");
+        LOGGER.log(Level.FINER, "Reading metadata file");
 
         MutableBoolean isApiCreated = new MutableBoolean(false);
+
+        LOGGER.log(Level.FINER, "Creating rest client configuration");
+        configuration = RestClientUtil.configuration(this.step.getToken());
+
+        /*
+         * Metadata
+         */
+
+        MetadataFile metadataFile;
 
         try {
             metadataFile = FileReader.metadataFile(FileReader.filePath(path, this.step.getMetadataFile()));
             if (metadataFile == null) {
-                return failure(METADATA_FILE_MISSING_ERROR);
+                return failure(METADATA_FILE_MISSING_ERROR, configuration.getToken());
             }
 
-            LOGGER.log(Level.INFO, "Creating rest client configuration");
-            configuration = RestClientUtil.configuration(this.step.getToken());
-
-            LOGGER.log(Level.INFO, "Uploading metadata content");
+            LOGGER.log(Level.FINER, "Uploading metadata content");
             MetadataDataRestEntity metadataReturnObject = uploadMetadata(metadataFile, configuration, isApiCreated);
             if (metadataReturnObject == null) {
-                return failure(UNABLE_TO_UPLOAD_METADATA_ERROR_MESSAGE);
+                return failure(UNABLE_TO_UPLOAD_METADATA_ERROR_MESSAGE, configuration.getToken());
             }
         } catch (FileNotFoundException e){
-            LOGGER.log(Level.INFO, e.getMessage());
-            return failure(METADATA_FILE_MISSING_ERROR);
+            LOGGER.log(Level.FINE, e.getMessage());
+            return failure(METADATA_FILE_MISSING_ERROR, configuration.getToken());
         } catch (IOException e) {
-            LOGGER.log(Level.INFO, e.getMessage());
-            return failure(UNABLE_TO_UPLOAD_METADATA_ERROR_MESSAGE);
+            LOGGER.log(Level.FINE, e.getMessage());
+            return failure(UNABLE_TO_UPLOAD_METADATA_ERROR_MESSAGE, configuration.getToken());
         } catch (IncorrectTokenException e) {
-            LOGGER.log(Level.INFO, e.getMessage());
-            return failure(MISSING_OR_INVALID_API_TOKEN_ERROR_MESSAGE);
+            LOGGER.log(Level.FINE, e.getMessage());
+            return failure(MISSING_OR_INVALID_API_TOKEN_ERROR_MESSAGE, configuration.getToken());
         } catch (PublishErrorException e){
-            LOGGER.log(Level.INFO, e.getMessage());
-            return failure(e.getMessage());
+            LOGGER.log(Level.FINE, e.getMessage());
+            return failure(e.getMessage(), configuration.getToken());
         }
 
-        LOGGER.log(Level.INFO, "Reading taxonomy file");
+        /*
+         * Taxonomy
+         */
+
+        LOGGER.log(Level.FINER, "Reading taxonomy file");
 
         try {
             TaxonomyFile taxonomyFile = FileReader.taxonomyFile(FileReader.filePath(path, this.step.getTaxonomyFile()));
-            if (taxonomyFile == null) { return failure(TAXONOMY_FILE_MISSING_ERROR); }
+            if (taxonomyFile == null) { return failure(TAXONOMY_FILE_MISSING_ERROR, configuration.getToken()); }
 
-            LOGGER.log(Level.INFO, "Uploading taxonomy content");
+            LOGGER.log(Level.FINER, "Uploading taxonomy content");
             ClassificationRootRestEntity classificationReturnObject = uploadTaxonomy(
                     metadataFile.getData().getName(),
                     metadataFile.getData().getApiVersion(),
                     taxonomyFile,
                     configuration
             );
-            if (classificationReturnObject == null) { return failure(UNABLE_TO_UPLOAD_TAXONOMY_ERROR_MESSAGE); }
+            if (classificationReturnObject == null) { return failure(UNABLE_TO_UPLOAD_TAXONOMY_ERROR_MESSAGE, configuration.getToken()); }
         } catch (FileNotFoundException e){
-            LOGGER.log(Level.INFO, e.getMessage());
-            return failure(TAXONOMY_FILE_MISSING_ERROR);
+            LOGGER.log(Level.FINE, e.getMessage());
+            return failure(TAXONOMY_FILE_MISSING_ERROR, configuration.getToken());
         } catch (IncorrectTokenException e) {
-            LOGGER.log(Level.INFO, e.getMessage());
-            return failure(MISSING_OR_INVALID_API_TOKEN_ERROR_MESSAGE);
+            LOGGER.log(Level.FINE, e.getMessage());
+            return failure(MISSING_OR_INVALID_API_TOKEN_ERROR_MESSAGE, configuration.getToken());
         } catch (Exception e) {
-            LOGGER.log(Level.INFO, e.getMessage());
-            return failure(UNABLE_TO_UPLOAD_TAXONOMY_ERROR_MESSAGE);
+            LOGGER.log(Level.FINE, e.getMessage());
+            return failure(UNABLE_TO_UPLOAD_TAXONOMY_ERROR_MESSAGE, configuration.getToken());
+        }
+
+        /*
+         * Readme.md
+         */
+
+        if(descImpl.isAllowReadmeUpload() && this.step.getReadmeFile() != null && !this.step.getReadmeFile().isEmpty()){
+            try{
+                String readme = FileReader.readDocument(FileReader.filePath(path, this.step.getReadmeFile()));
+                if (readme == null) { return failure(README_FILE_MISSING_ERROR, configuration.getToken()); }
+
+                LOGGER.log(Level.FINER, "Uploading README.md content");
+                String readmeReturnObject = uploadReadme(
+                        metadataFile.getData().getName(),
+                        metadataFile.getData().getApiVersion(),
+                        readme,
+                        configuration
+                );
+                if (readmeReturnObject == null) { return failure(UNABLE_TO_UPLOAD_README_ERROR_MESSAGE, configuration.getToken()); }
+            } catch (IncorrectFileTypeException e){
+                LOGGER.log(Level.FINE, e.getMessage());
+                return failure(MARKDOWN_FILE_FORMAT_REQUIRED, configuration.getToken());
+            } catch (FileNotFoundException e){
+                LOGGER.log(Level.FINE, e.getMessage());
+                return failure(README_FILE_MISSING_ERROR, configuration.getToken());
+            } catch (IncorrectTokenException e) {
+                LOGGER.log(Level.FINE, e.getMessage());
+                return failure(MISSING_OR_INVALID_API_TOKEN_ERROR_MESSAGE, configuration.getToken());
+            } catch (Exception e) {
+                LOGGER.log(Level.FINE, e.getMessage());
+                return failure(UNABLE_TO_UPLOAD_README_ERROR_MESSAGE, configuration.getToken());
+            }
+        }
+
+        /*
+         * Changelog.md
+         */
+
+        if(descImpl.isAllowChangelogUpload() && this.step.getChangelogFile() != null && !this.step.getChangelogFile().isEmpty()){
+            try{
+                String changelog = FileReader.readDocument(FileReader.filePath(path, this.step.getChangelogFile()));
+                if (changelog == null) { return failure(README_FILE_MISSING_ERROR, configuration.getToken()); }
+
+                LOGGER.log(Level.FINER, "Uploading CHANGELOG.md content");
+                String readmeReturnObject = uploadChangelog(
+                        metadataFile.getData().getName(),
+                        metadataFile.getData().getApiVersion(),
+                        changelog,
+                        configuration
+                );
+                if (readmeReturnObject == null) { return failure(UNABLE_TO_UPLOAD_CHANGELOG_ERROR_MESSAGE, configuration.getToken()); }
+            } catch (IncorrectFileTypeException e){
+                LOGGER.log(Level.FINE, e.getMessage());
+                return failure(MARKDOWN_FILE_FORMAT_REQUIRED, configuration.getToken());
+            } catch (FileNotFoundException e){
+                LOGGER.log(Level.FINE, e.getMessage());
+                return failure(CHANGELOG_FILE_MISSING_ERROR, configuration.getToken());
+            } catch (IncorrectTokenException e) {
+                LOGGER.log(Level.FINE, e.getMessage());
+                return failure(MISSING_OR_INVALID_API_TOKEN_ERROR_MESSAGE, configuration.getToken());
+            } catch (Exception e) {
+                LOGGER.log(Level.FINE, e.getMessage());
+                return failure(UNABLE_TO_UPLOAD_CHANGELOG_ERROR_MESSAGE, configuration.getToken());
+            }
         }
 
         return success(STEP_COMPLETED_SUCCESSFULLY, configuration.getToken(), isApiCreated);
@@ -173,7 +258,7 @@ public class PublishStepExecution extends SynchronousStepExecution<PublishResult
 
     protected MetadataDataRestEntity uploadMetadata(MetadataFile metadataFile, RestClientConfiguration configuration, MutableBoolean isApiCreated) throws IOException, InterruptedException, IncorrectTokenException, PublishErrorException {
         /* Assemble REST entities */
-        LOGGER.log(Level.INFO, "Assembling REST entities");
+        LOGGER.log(Level.FINER, "Assembling REST entities");
 
         MetadataDataRestEntity metadataDataApiEntity = new MetadataDataRestEntity(
                 metadataFile.getData().getName(),
@@ -199,17 +284,16 @@ public class PublishStepExecution extends SynchronousStepExecution<PublishResult
         );
 
         /* Setup callback methods */
-        LOGGER.log(Level.INFO, "Creating callback methods");
+        LOGGER.log(Level.FINER, "Creating callback methods");
 
         Consumer<Object> apiCreatedCallback = content -> {
-            LOGGER.log(Level.INFO, "Setting token " + ((ApiDataRestEntity) content).getMeta().getToken());
+            LOGGER.log(Level.FINER, "Setting token " + ((ApiDataRestEntity) content).getMeta().getToken());
             configuration.setToken(((ApiDataRestEntity) content).getMeta().getToken());
             isApiCreated.setValue(true);
         };
 
         Consumer<Object> apiVersionCreatedCallback = content -> {
-            LOGGER.log(Level.INFO, "apiVersionCreatedCallback");
-            LOGGER.log(Level.INFO, content.toString());
+            LOGGER.log(Level.FINER, content.toString());
         };
 
         AtomicReference<String> errorMessage = new AtomicReference<>();
@@ -218,7 +302,7 @@ public class PublishStepExecution extends SynchronousStepExecution<PublishResult
         };
 
         /* Performing REST calls */
-        LOGGER.log(Level.INFO, "Performing REST calls");
+        LOGGER.log(Level.FINER, "Performing REST calls");
 
         MetadataDataRestEntity object = IRestClient.withConfiguration(configuration)
                 .withErrorHandler(errorHandlerCallback)
@@ -228,7 +312,7 @@ public class PublishStepExecution extends SynchronousStepExecution<PublishResult
                 .followResource(metadataDataApiEntity.getApiVersion())
                 .onMissingCreate(metadataDataApiEntity.getApiVersion(), apiVersionDataApiEntity, apiVersionCreatedCallback)
                 .followCollection(JsonApiRestResponseWrapper.METADATA_COLLECTION)
-                .createOrUpdateResource(metadataDataApiEntity);
+                .createOrUpdateResource(metadataDataApiEntity, ContentType.APPLICATION_JSON);
 
         if(errorMessage.get() != null){
             throw new PublishErrorException(errorMessage.get());
@@ -239,7 +323,7 @@ public class PublishStepExecution extends SynchronousStepExecution<PublishResult
 
     protected ClassificationRootRestEntity uploadTaxonomy(String apiName, String apiVersion, TaxonomyFile taxonomyFile, RestClientConfiguration configuration) throws IOException, IncorrectTokenException, PublishErrorException {
         /* Assemble REST entities */
-        LOGGER.log(Level.INFO, "Assembling REST entities");
+        LOGGER.log(Level.FINER, "Assembling REST entities");
 
         ClassificationRootRestEntity classificationRootApiEntity = new ClassificationRootRestEntity(
                 taxonomyFile
@@ -251,16 +335,15 @@ public class PublishStepExecution extends SynchronousStepExecution<PublishResult
         );
 
         /* Setup callback methods */
-        LOGGER.log(Level.INFO, "Creating callback methods");
+        LOGGER.log(Level.FINER, "Creating callback methods");
 
         AtomicReference<String> errorMessage = new AtomicReference<>();
         Consumer<String> errorHandlerCallback = content -> {
             if(content != null) errorMessage.set(content.toString());
         };
 
-
         /* Performing REST calls */
-        LOGGER.log(Level.INFO, "Performing REST calls");
+        LOGGER.log(Level.FINER, "Performing REST calls");
 
         ClassificationRootRestEntity returnValue = IRestClient.withConfiguration(configuration)
                 .withErrorHandler(errorHandlerCallback)
@@ -268,12 +351,68 @@ public class PublishStepExecution extends SynchronousStepExecution<PublishResult
                 .followCollection(apiName, JsonApiRestResponseWrapper.VERSION_COLLECTION)
                 .followResource(apiVersion)
                 .followCollection(JsonApiRestResponseWrapper.CLASSIFICATION_COLLECTION)
-                .createOrUpdateResource(classificationRootApiEntity);
+                .createOrUpdateResource(classificationRootApiEntity, ContentType.APPLICATION_JSON);
 
         if(errorMessage.get() != null){
             throw new PublishErrorException(errorMessage.get());
         }
 
         return returnValue;
+    }
+
+    protected String uploadReadme(String apiName, String apiVersion, String readme, RestClientConfiguration configuration) throws IOException, IncorrectTokenException, PublishErrorException {
+        LOGGER.log(Level.FINER, "Uploading README.md");
+
+        /* Setup callback methods */
+        LOGGER.log(Level.FINER, "Creating callback methods");
+
+        AtomicReference<String> errorMessage = new AtomicReference<>();
+        Consumer<String> errorHandlerCallback = content -> {
+            if(content != null) errorMessage.set(content.toString());
+        };
+
+        /* Performing REST calls */
+        LOGGER.log(Level.FINER, "Performing REST calls");
+        String returnObject = IRestClient.withConfiguration(configuration)
+                .withErrorHandler(errorHandlerCallback)
+                .followCollection(JsonApiRestResponseWrapper.API_COLLECTION)
+                .followCollection(apiName, JsonApiRestResponseWrapper.VERSION_COLLECTION)
+                .followResource(apiVersion)
+                .followCollection(JsonApiRestResponseWrapper.README_ELEMENT)
+                .createOrUpdateResource(readme, ContentType.create("text/markdown"));
+
+        if(errorMessage.get() != null){
+            throw new PublishErrorException(errorMessage.get());
+        }
+
+        return returnObject;
+    }
+
+    protected String uploadChangelog(String apiName, String apiVersion, String changelog, RestClientConfiguration configuration) throws IOException, IncorrectTokenException, PublishErrorException {
+        LOGGER.log(Level.FINER, "Uploading CHANGELOG.md");
+
+        /* Setup callback methods */
+        LOGGER.log(Level.FINER, "Creating callback methods");
+
+        AtomicReference<String> errorMessage = new AtomicReference<>();
+        Consumer<String> errorHandlerCallback = content -> {
+            if(content != null) errorMessage.set(content.toString());
+        };
+
+        /* Performing REST calls */
+        LOGGER.log(Level.FINER, "Performing REST calls");
+        String returnObject = IRestClient.withConfiguration(configuration)
+                .withErrorHandler(errorHandlerCallback)
+                .followCollection(JsonApiRestResponseWrapper.API_COLLECTION)
+                .followCollection(apiName, JsonApiRestResponseWrapper.VERSION_COLLECTION)
+                .followResource(apiVersion)
+                .followCollection(JsonApiRestResponseWrapper.CHANGELOG_ELEMENT)
+                .createOrUpdateResource(changelog, ContentType.create("text/markdown"));
+
+        if(errorMessage.get() != null){
+            throw new PublishErrorException(errorMessage.get());
+        }
+
+        return returnObject;
     }
 }

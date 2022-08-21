@@ -8,8 +8,6 @@ import io.apimap.file.exceptions.UnsupportedVersionException;
 import io.apimap.file.metadata.MetadataFile;
 import io.apimap.file.taxonomy.TaxonomyFile;
 import io.apimap.plugin.jenkins.utils.FileReader;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.conn.HttpHostConnectException;
 import org.apache.tools.ant.filters.StringInputStream;
 import org.junit.Assert;
 import org.junit.Test;

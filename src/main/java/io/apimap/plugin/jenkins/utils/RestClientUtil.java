@@ -24,7 +24,6 @@ import io.apimap.plugin.jenkins.ApiMap;
 import jenkins.model.Jenkins;
 
 import java.io.IOException;
-import java.util.regex.Pattern;
 
 public class RestClientUtil {
     public static RestClientConfiguration configuration(String token) throws IOException {
@@ -40,11 +39,15 @@ public class RestClientUtil {
             throw new IOException("Missing required root URL");
         }
 
-        return new RestClientConfiguration(
+        RestClientConfiguration client = new RestClientConfiguration(
                 token,
                 descImpl.getUrl(),
                 descImpl.isDebugMode()
         );
+
+        client.setDryRunMode(descImpl.isDryRunMode());
+
+        return client;
     }
 
     public static boolean bareboneURL(String url){

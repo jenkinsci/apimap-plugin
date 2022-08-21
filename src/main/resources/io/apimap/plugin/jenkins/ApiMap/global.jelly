@@ -5,13 +5,19 @@
         <f:textbox />
     </f:entry>
     <f:entry title="Update Global Build Status" field="updateBuildStatus">
-      <f:checkbox />
+      <f:checkbox default="false"/>
     </f:entry>
     <f:entry title="Enable Debug Mode" field="debugMode">
-      <f:checkbox />
+      <f:checkbox default="false"/>
     </f:entry>
     <f:entry title="Enable Dry-run Mode" field="dryRunMode">
-      <f:checkbox />
+      <f:checkbox default="false"/>
+    </f:entry>
+    <f:entry title="Feature flag: Allow upload of README.md" field="allowReadmeUpload">
+      <f:checkbox default="false"/>
+    </f:entry>
+    <f:entry title="Feature flag: Allow upload of CHANGELOG.md" field="allowChangelogUpload">
+      <f:checkbox default="false"/>
     </f:entry>
   </f:section>
 </j:jelly>

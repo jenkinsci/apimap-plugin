@@ -53,6 +53,8 @@ public class ApiMap extends JobProperty<AbstractProject<?, ?>> {
         private boolean updateBuildStatus;
         private boolean dryRunMode;
         private boolean debugMode;
+        private boolean allowReadmeUpload;
+        private boolean allowChangelogUpload;
 
         public ApiMapDescriptorImpl() {
             super(ApiMap.class);
@@ -106,6 +108,26 @@ public class ApiMap extends JobProperty<AbstractProject<?, ?>> {
 
         public void setDebugMode(boolean debugMode) {
             this.debugMode = debugMode;
+        }
+
+        public boolean isUpdateBuildStatus() {
+            return updateBuildStatus;
+        }
+
+        public boolean isAllowReadmeUpload() {
+            return allowReadmeUpload;
+        }
+
+        public void setAllowReadmeUpload(boolean allowReadmeUpload) {
+            this.allowReadmeUpload = allowReadmeUpload;
+        }
+
+        public boolean isAllowChangelogUpload() {
+            return allowChangelogUpload;
+        }
+
+        public void setAllowChangelogUpload(boolean allowChangelogUpload) {
+            this.allowChangelogUpload = allowChangelogUpload;
         }
     }
 }

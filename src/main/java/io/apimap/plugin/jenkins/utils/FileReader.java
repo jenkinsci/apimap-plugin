@@ -19,17 +19,17 @@ under the License.
 
 package io.apimap.plugin.jenkins.utils;
 
-import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import hudson.FilePath;
 import io.apimap.file.FileFactory;
 import io.apimap.file.exceptions.MissingRequiredFieldException;
 import io.apimap.file.exceptions.UnsupportedVersionException;
 import io.apimap.file.metadata.MetadataFile;
 import io.apimap.file.taxonomy.TaxonomyFile;
+import io.apimap.plugin.jenkins.exceptions.IncorrectFileTypeException;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.stream.Collectors;
 
 public class FileReader {
     public static MetadataFile metadataFile(FilePath filePath) throws InterruptedException, MissingRequiredFieldException, UnsupportedVersionException, IOException {
@@ -44,6 +44,19 @@ public class FileReader {
 
         InputStream fileReader = FileReader.readFileInDirectory(filePath);
         return FileFactory.taxonomyFromInputStream(fileReader);
+    }
+
+    public static String readDocument(FilePath filePath) throws IOException, InterruptedException, IncorrectFileTypeException {
+        if(!filePath.getName().endsWith(".md")){
+            throw new IncorrectFileTypeException("File must be of type markdown, ending with .md");
+        }
+
+        InputStream fileReader = FileReader.readFileInDirectory(filePath);
+
+        return new BufferedReader(
+                new InputStreamReader(fileReader, StandardCharsets.UTF_8))
+                .lines()
+                .collect(Collectors.joining("\n"));
     }
 
     public static InputStream readFileInDirectory(FilePath file) throws IOException, InterruptedException {

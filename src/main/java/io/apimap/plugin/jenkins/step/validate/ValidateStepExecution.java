@@ -21,7 +21,6 @@ package io.apimap.plugin.jenkins.step.validate;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import hudson.FilePath;
 import hudson.model.Result;
 import io.apimap.file.metadata.MetadataFile;
@@ -53,7 +52,6 @@ public class ValidateStepExecution extends SynchronousStepExecution<ValidateResu
     private static final long serialVersionUID = 1L;
 
     private final ValidateStep step;
-
 
     public ValidateStepExecution(ValidateStep step, StepContext context){
         super(context);
@@ -89,7 +87,7 @@ public class ValidateStepExecution extends SynchronousStepExecution<ValidateResu
         FilePath path = getContext().get(FilePath.class);
         if(path == null) { return failure(FILEPATH_IS_A_NULL_OBJECT, ValidateResult.Status.MISSING); }
 
-        LOGGER.log(Level.INFO, "Reading metadata file");
+        LOGGER.log(Level.FINER, "Reading metadata file");
         try {
             MetadataFile metadataFile = FileReader.metadataFile(FileReader.filePath(path, this.step.getMetadataFile()));
             if (metadataFile == null) {
