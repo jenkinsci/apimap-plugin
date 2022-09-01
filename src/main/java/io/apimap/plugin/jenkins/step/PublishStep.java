@@ -116,12 +116,14 @@ public class PublishStep extends Step implements Serializable {
                        final String taxonomyFile,
                        final String readmeFile,
                        final String changelogFile,
-                       final String token) {
+                       final String token,
+                       final String repositoryURL) {
         this.metadataFile = metadataFile;
         this.taxonomyFile = taxonomyFile;
         this.readmeFile = readmeFile;
         this.changelogFile = changelogFile;
         this.token = token;
+        this.repositoryURL = repositoryURL;
     }
 
     @Override

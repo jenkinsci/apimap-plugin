@@ -48,12 +48,13 @@ The following is an example of how to use the plugin inside a Jenkinsfile
 
 The plugin is configured by default with the following values. If a value is not overwritten with another value the defaults will be used.
 
-| Argument           | Default Value            |
-|--------------------|--------------------------|
-| metadataFile       | "apimap/metadata.apimap" |
-| taxonomyFile       | "apimap/taxonomy.apimap" |
-| readmeFile         | "README.md"              |
-| changelogFile      | "CHANGELOG.md"           |
+| Argument       | Default Value            |
+|----------------|--------------------------|
+| metadataFile   | "apimap/metadata.apimap" |
+| taxonomyFile   | "apimap/taxonomy.apimap" |
+| readmeFile     | "README.md"              |
+| changelogFile  | "CHANGELOG.md"           |
+| repositoryURL  | empty                    |
 
 #### Pipeline as Code
 
@@ -84,7 +85,8 @@ pipeline {
                     def result = publishAPI metadataFile: 'apimap/metadata.apimap',
                             taxonomyFile: 'apimap/taxonomy.apimap',
                             readmeFile: 'README.md',
-                            changelogFile: 'CHANGELOG.md'
+                            changelogFile: 'CHANGELOG.md',
+                            repositoryURL: scm.getUserRemoteConfigs()[0].getUrl()
 
                     echo result.getStatus().toString()
                     echo result.getDescription()
