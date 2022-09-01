@@ -1,6 +1,9 @@
 Changelog
 ===
 
+### 01.09.2022
+- Fixed repository url bug
+
 ### 19.08.2022
 - Added readme and changelog resource uploads
 - Using log levels FINER and FINE 
